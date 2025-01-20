@@ -29,7 +29,7 @@ class InvalidKeyError(Exception):
     """ Raised when key is 0 or a multiple of 26 """
     pass
 
-def normalized_key(key: Optional[int] = None) -> int:
+def normalize_key(key: Optional[int] = None) -> int:
     if key is None:
         return random.randint(1, 25)
     
@@ -64,14 +64,14 @@ def encrypt_message(original_message: str, key: int):
     
     return encrypted_message
 
-def transform_message(message: str, keepSpaces: bool, keepPunctation: bool, transformCase: TransformCase):
-    if transformCase == TransformCase.LOWERCASE:
+def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase):
+    if transform_case == TransformCase.LOWERCASE:
         message = message.lower()
-    elif transformCase == TransformCase.UPPERCASE:
+    elif transform_case == TransformCase.UPPERCASE:
         message = message.upper()
 
-    if not keepSpaces or not keepPunctation:
-        chars = (char for char in message if (keepSpaces or char != ' ') and (keepPunctation or char.isalnum()))
+    if not keep_spaces or not keep_punctation:
+        chars = (char for char in message if (keep_spaces or char != ' ') and (keep_punctation or char.isalnum()))
         message = ''.join(chars)
     
     return message
@@ -89,10 +89,10 @@ class EncryptionRequest(BaseModel):
 def encrypt():
     try:
         data = EncryptionRequest(**request.get_json())
-        normalized_key = normalized_key(data.key)
+        normalized_key = normalize_key(data.key)
 
         encrypted_message = encrypt_message(data.message, normalized_key)
-        transformed_message = transform_message(encrypted_message, data.keepSpaces, data.keepPunctation, data.transformCase)
+        transformed_message = transform_message(encrypted_message, data.keep_spaces, data.keep_punctuation, data.transform_case)
 
         response = ApiResponse(
             success=True,
