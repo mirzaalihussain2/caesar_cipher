@@ -55,12 +55,13 @@ def encrypt_message(original_message: str, key: int):
     alphabet = sorted(load_json_file(json_path).keys())
 
     for character in original_message:
-        original_position = alphabet.index(character) if character in alphabet else None
+        original_position = alphabet.index(character.lower()) if character.lower() in alphabet else None
         if original_position is None:
             encrypted_message = encrypted_message + character
         else:
             encrypted_position = (original_position + key) % 26
-            encrypted_message = encrypted_message + alphabet[encrypted_position]
+            encrypted_character = alphabet[encrypted_position]
+            encrypted_message = encrypted_message + (encrypted_character.upper() if character.isupper() else encrypted_character)
     
     return encrypted_message
 
