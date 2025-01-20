@@ -1,11 +1,24 @@
 from pydantic import BaseModel, Field, ValidationError
-from typing import Optional
+from typing import Optional, Dict
 from flask import jsonify, request
 from app.routes import bp
 import random
 import json
 import os
 from enum import Enum
+from http import HTTPStatus
+import logging
+import inspect
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+
+class ApiResponse(BaseModel):
+    success: bool
+    data: Optional[str] = None
+    metadata: Optional[Dict] = None
+    error: Optional[ErrorDetail] = None
 
 class TransformCase(str, Enum):
     LOWERCASE = "lowercase"
@@ -81,13 +94,43 @@ def encrypt():
         encrypted_message = encrypt_message(data.message, normalized_key)
         transformed_message = transform_message(encrypted_message, data.keepSpaces, data.keepPunctation, data.transformCase)
 
-        return transformed_message
+        response = ApiResponse(
+            success=True,
+            data=transformed_message,
+            metadata={'key':normalized_key}
+        )
+        return jsonify(response.model_dump()), HTTPStatus.OK
 
-    except ValidationError:
-        return 'error'
-    except InvalidKeyError:
-        return jsonify({
-            InvalidKeyError
-        })
-    except Exception:
-        return 'encrypted text'
+    except ValidationError as error:
+        response = ApiResponse(
+            success=False,
+            error=ErrorDetail(
+                code="VALIDATION_ERROR", 
+                message=str(error)
+            )
+        )
+        return jsonify(response.model_dump()), HTTPStatus.BAD_REQUEST
+    
+    except InvalidKeyError as error:
+        response = ApiResponse(
+            success=False,
+            error=ErrorDetail(
+                code="INVALID_KEY",
+                message=str(error)
+            )
+        )
+        return jsonify(response.model_dump()), HTTPStatus.UNPROCESSABLE_ENTITY
+    
+    except Exception as error:
+        function_name = inspect.currentframe().f_code.co_name
+        logging.error(f'Unexpected error in {function_name} function: {str(error)}')
+
+        response = ApiResponse(
+            success=False,
+            error=ErrorDetail(
+                code="INTERNAL_ERROR",
+                message="An unexpected error occurred"
+
+            )
+        )
+        return jsonify(response.model_dump()), HTTPStatus.INTERNAL_SERVER_ERROR
