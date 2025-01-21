@@ -71,11 +71,21 @@ def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, tr
     elif transform_case == TransformCase.UPPERCASE:
         message = message.upper()
 
-    if not keep_spaces or not keep_punctation:
-        chars = (char for char in message if (keep_spaces or char != ' ') and (keep_punctation or char.isalnum()))
-        message = ''.join(chars)
+    chars = []
+    for char in message:
+        if char == ' ':
+            if keep_spaces:
+                chars.append(char)
+            # if not keep_spaces, skip the space
+        elif not char.isalnum():
+            if keep_punctation:
+                chars.append(char)
+            # if not keep_punctation, skip the punctuation
+        else:
+            chars.append(char)  # always keep alphanumeric chars
     
-    return message
+    transformed_message = ''.join(chars)
+    return transformed_message
 
 
 class EncryptionRequest(BaseModel):
