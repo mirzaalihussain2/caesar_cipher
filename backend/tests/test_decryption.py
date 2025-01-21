@@ -1,5 +1,5 @@
 import pytest
-from app.routes.encrypt import TransformCase
+from app.encrypt import TransformCase
 
 # Base test case variations that will be applied to each encrypted message
 base_variations = [

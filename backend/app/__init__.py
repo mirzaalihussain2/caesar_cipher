@@ -5,9 +5,12 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Register blueprints
-    from app.routes import bp
-    app.register_blueprint(bp, url_prefix='/')
+    # Import routes
+    from app.encrypt import bp as encrypt_bp
+    from app.decrypt import bp as decrypt_bp
+    
+    app.register_blueprint(encrypt_bp)
+    app.register_blueprint(decrypt_bp)
 
     @app.route('/hello', methods=['GET'])
     def api_endpoint():

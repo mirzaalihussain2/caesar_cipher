@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional, Dict, Literal
-from flask import jsonify, request
-from app.routes import bp
+from flask import Blueprint, jsonify, request
 import random
 import json
 import os
@@ -9,6 +8,8 @@ from enum import Enum
 from http import HTTPStatus
 import logging
 import inspect
+
+bp = Blueprint('encrypt', __name__)
 
 class ErrorDetail(BaseModel):
     code: str
@@ -40,7 +41,7 @@ def normalize_key(key: int, encrypt_or_decrypt: Literal['encrypt', 'decrypt'] = 
     return normalized_key
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
+json_path = os.path.join(current_dir, 'data', 'letter_frequencies.json')
 
 def load_json_file(filepath):
     with open(filepath, 'r') as f:

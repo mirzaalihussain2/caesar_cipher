@@ -1,5 +1,5 @@
 import pytest
-from app.routes.encrypt import TransformCase
+from app.encrypt import TransformCase
 
 test_cases = [
     # key=5 permutations
