@@ -1,5 +1,5 @@
 import pytest
-from app.encrypt import TransformCase
+from app.core.types import TransformCase
 
 test_cases = [
     # key=5 permutations

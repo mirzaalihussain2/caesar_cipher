@@ -1,5 +1,5 @@
 import pytest
-from app.encrypt import TransformCase
+from app.core.types import TransformCase
 
 # Base test case variations that will be applied to each encrypted message
 base_variations = [

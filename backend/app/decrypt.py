@@ -1,27 +1,14 @@
-from .encrypt import (
-    EncryptionRequest,
-    ErrorDetail,
-    ApiResponse,
-    InvalidKeyError,
-    normalize_key,
-    encrypt_message,
-    transform_message,
-    load_json_file
-)
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
 import inspect
 import logging
-import os
+from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
+from app.core.utils import normalize_key, count_alphabetic_characters
+from app.core.errors import InvalidKeyError
+from app.core.encryption import encrypt_message, transform_message
 
 bp = Blueprint('decrypt', __name__)
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_dir, 'data', 'letter_frequencies.json')
-
-def count_alphabetic_characters(message: str) -> int:
-    return sum(1 for char in message if char.isalpha())
 
 @bp.route('/decrypt', methods=['POST'])
 def decrypt():

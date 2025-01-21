@@ -1,98 +1,15 @@
-from pydantic import BaseModel, Field, ValidationError
-from typing import Optional, Dict, Literal
+from pydantic import ValidationError
 from flask import Blueprint, jsonify, request
 import random
-import json
-import os
-from enum import Enum
 from http import HTTPStatus
 import logging
 import inspect
+from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
+from app.core.utils import normalize_key
+from app.core.errors import InvalidKeyError
+from app.core.encryption import encrypt_message, transform_message
 
 bp = Blueprint('encrypt', __name__)
-
-class ErrorDetail(BaseModel):
-    code: str
-    message: str
-
-class ApiResponse(BaseModel):
-    success: bool
-    data: Optional[str] = None
-    metadata: Optional[Dict] = None
-    error: Optional[ErrorDetail] = None
-
-class TransformCase(str, Enum):
-    LOWERCASE = "lowercase"
-    UPPERCASE = "uppercase"
-    KEEP_CASE = "keep_case"
-
-class InvalidKeyError(Exception):
-    """ Raised when key is 0 or a multiple of 26 """
-    pass
-
-def normalize_key(key: int, encrypt_or_decrypt: Literal['encrypt', 'decrypt'] = 'encrypt') -> int:
-    if key == 0:
-        raise InvalidKeyError(f"Key cannot be 0. This won't {encrypt_or_decrypt} your message.")
-
-    normalized_key = key % 26
-    if normalized_key == 0:
-        raise InvalidKeyError(f"Key cannot be a multiple of 26. This won't {encrypt_or_decrypt} your message.")
-
-    return normalized_key
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_dir, 'data', 'letter_frequencies.json')
-
-def load_json_file(filepath):
-    with open(filepath, 'r') as f:
-        return json.load(f)
-
-
-def encrypt_message(original_message: str, key: int):
-    encrypted_message = ""
-    alphabet = sorted(load_json_file(json_path).keys())
-
-    for character in original_message:
-        original_position = alphabet.index(character.lower()) if character.lower() in alphabet else None
-        if original_position is None:
-            encrypted_message = encrypted_message + character
-        else:
-            encrypted_position = (original_position + key) % 26
-            encrypted_character = alphabet[encrypted_position]
-            encrypted_message = encrypted_message + (encrypted_character.upper() if character.isupper() else encrypted_character)
-    
-    return encrypted_message
-
-def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase):
-    if transform_case == TransformCase.LOWERCASE:
-        message = message.lower()
-    elif transform_case == TransformCase.UPPERCASE:
-        message = message.upper()
-
-    chars = []
-    for char in message:
-        if char == ' ':
-            if keep_spaces:
-                chars.append(char)
-            # if not keep_spaces, skip the space
-        elif not char.isalnum():
-            if keep_punctation:
-                chars.append(char)
-            # if not keep_punctation, skip the punctuation
-        else:
-            chars.append(char)  # always keep alphanumeric chars
-    
-    transformed_message = ''.join(chars)
-    return transformed_message
-
-
-class EncryptionRequest(BaseModel):
-    message: str = Field(..., max_length=5000, description="Message to be encrypted / decrypted")
-    key: Optional[int] = Field(None, description="Shift key for encryption / decryption")
-    keep_spaces: Optional[bool] = Field(default=True, description='')
-    keep_punctuation: Optional[bool] = Field(default=True, description='')
-    transform_case: TransformCase = Field(default=TransformCase.KEEP_CASE, description='')
-
 
 @bp.route('/encrypt', methods=['POST'])
 def encrypt():
