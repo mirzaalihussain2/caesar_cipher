@@ -1,17 +1,28 @@
 from app.routes import bp
-from app.routes.encrypt import EncryptionRequest, ErrorDetail, ApiResponse, InvalidKeyError, normalize_key, encrypt_message, transform_message
+from app.routes.encrypt import EncryptionRequest, ErrorDetail, ApiResponse, InvalidKeyError, normalize_key, encrypt_message, transform_message, load_json_file
 from flask import jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
 import inspect
 import logging
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
+
+def count_alphabetic_characters(message: str) -> int:
+    return sum(1 for char in message if char.isalpha())
 
 @bp.route('/decrypt', methods=['POST'])
 def decrypt():
     try:
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
-            # hack
+            
+            # get number of alphabetic character in encrypted message, for frequency analysis
+            number_of_alphabetic_characters = count_alphabetic_characters(data.message)
+            
+
             response = ApiResponse(
                 success=True,
                 data="hacked message"
