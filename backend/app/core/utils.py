@@ -16,5 +16,5 @@ def load_json_file(filepath):
     with open(filepath, 'r') as f:
         return json.load(f)
 
-def count_alphabetic_characters(message: str) -> int:
+def count_alpha_characters(message: str) -> int:
     return sum(1 for char in message if char.isalpha())
