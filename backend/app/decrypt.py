@@ -18,7 +18,7 @@ import os
 bp = Blueprint('decrypt', __name__)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_dir, 'data', 'letter_template.json')
+json_path = os.path.join(current_dir, 'data', 'letter_frequencies.json')
 
 def count_alphabetic_characters(message: str) -> int:
     return sum(1 for char in message if char.isalpha())
