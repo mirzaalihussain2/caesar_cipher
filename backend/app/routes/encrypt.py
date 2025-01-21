@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ValidationError
-from typing import Optional, Dict
+from typing import Optional, Dict, Literal
 from flask import jsonify, request
 from app.routes import bp
 import random
@@ -29,16 +29,13 @@ class InvalidKeyError(Exception):
     """ Raised when key is 0 or a multiple of 26 """
     pass
 
-def normalize_key(key: Optional[int] = None) -> int:
-    if key is None:
-        return random.randint(1, 25)
-    
+def normalize_key(key: int, encrypt_or_decrypt: Literal['encrypt', 'decrypt'] = 'encrypt') -> int:
     if key == 0:
-        raise InvalidKeyError("Key cannot be 0. This won't encrypt your message.")
+        raise InvalidKeyError(f"Key cannot be 0. This won't {encrypt_or_decrypt} your message.")
 
     normalized_key = key % 26
     if normalized_key == 0:
-        raise InvalidKeyError("Key cannot be a multiple of 26. This won't encrypt your message.")
+        raise InvalidKeyError(f"Key cannot be a multiple of 26. This won't {encrypt_or_decrypt} your message.")
 
     return normalized_key
 
@@ -100,7 +97,7 @@ class EncryptionRequest(BaseModel):
 def encrypt():
     try:
         data = EncryptionRequest(**request.get_json())
-        normalized_key = normalize_key(data.key)
+        normalized_key = random.randint(1, 25) if data.key is None else normalize_key(data.key, 'encrypt')
 
         encrypted_message = encrypt_message(data.message, normalized_key)
         transformed_message = transform_message(encrypted_message, data.keep_spaces, data.keep_punctuation, data.transform_case)
