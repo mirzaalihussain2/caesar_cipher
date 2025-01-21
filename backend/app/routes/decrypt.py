@@ -1,5 +1,5 @@
 from app.routes import bp
-from app.routes.encrypt import EncryptionRequest, ErrorDetail, ApiResponse, InvalidKeyError, normalize_key
+from app.routes.encrypt import EncryptionRequest, ErrorDetail, ApiResponse, InvalidKeyError, normalize_key, encrypt_message, transform_message
 from flask import jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
@@ -18,10 +18,14 @@ def decrypt():
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
-            normalized_key = normalize_key(data.key, 'decrypt')
+            key = -(data.key)
+            normalized_key = normalize_key(key, 'decrypt')
+            decrypted_message = encrypt_message(data.message, normalized_key)
+            transformed_message = transform_message(decrypted_message, data.keep_spaces, data.keep_punctuation, data.transform_case)
+            
             response = ApiResponse(
                 success=True,
-                data="decrypted message",
+                data=transformed_message,
                 metadata={'key':normalized_key}
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
