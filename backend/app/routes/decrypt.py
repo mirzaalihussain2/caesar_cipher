@@ -12,10 +12,19 @@ def decrypt():
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
             # hack
-            print("hack")
+            response = ApiResponse(
+                success=True,
+                data="hacked message"
+            )
+            return jsonify(response.model_dump()), HTTPStatus.OK
         else:
             normalized_key = normalize_key(data.key, 'decrypt')
-
+            response = ApiResponse(
+                success=True,
+                data="decrypted message",
+                metadata={'key':normalized_key}
+            )
+            return jsonify(response.model_dump()), HTTPStatus.OK
 
         # if key provided
         # normalise key - raising error if key = 0 (i.e. message already decrpyted)
