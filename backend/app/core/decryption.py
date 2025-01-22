@@ -1,6 +1,29 @@
-from .utils import load_json_file, count_alpha_characters
+from .utils import load_json_file
+from .encryption import encrypt_message
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
+from typing import TypedDict
+
+letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
+bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
+english_lang_freq: dict = load_json_file(letter_json_path)
+english_bigram_freq: dict = load_json_file(bigram_json_path)
+
+class SolutionText(TypedDict):
+    key: int
+    text: str
+
+def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
+    solutions = []
+
+    for key in range(26):
+        solution = {
+            'key': key,
+            'text': encrypt_message(ciphertext, key)
+        }
+        solutions.append(solution)
+
+    return solutions
 
 def get_ngrams(text: str, n: int) -> list[str]:
     cleaned_text: str = ''.join(char.lower() for char in text if char.isalpha() or char.isspace())
@@ -51,9 +74,7 @@ def keys_table(letter_frequency_dictionary: dict, bigram_frequency_dictionary: d
         print(f"Key {i}: {keys_dict[i]}")
     return keys_dict
 
-def hack_cypher(message: str):
-    number_of_alphabetic_characters = count_alpha_characters(message)
-    
+def hack_cypher(message: str):    
     letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
     bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
     english_lang_freq: dict = load_json_file(letter_json_path)
