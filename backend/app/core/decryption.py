@@ -27,10 +27,12 @@ def crack_cypher(ciphertext: str):
         # calculate chi-sq stat
         # add to solution dictionary
     for solution in solutions:
-        cleaned_text = clean_text(solution['text'])
-        ngram_list = get_ngrams(cleaned_text, 1)
-        observed_frequencies = get_observed_frequencies(ngram_list)
-        chi_squared_stat = calculate_chi_squared_stat(observed_frequencies, normalised_expected_frequencies)
+        chi_squared_stat = calculate_chi_squared_stat(
+            text=solution['text'],
+            ngram_size=1,
+            normalised_expected_frequencies=normalised_expected_frequencies
+        )
+
         scored_solutions.append({
             'key': solution['key'],
             'text': solution['text'],
@@ -56,35 +58,40 @@ def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
 def clean_text(text: str) -> str:
     return ''.join(character.lower() for character in text if character.isalpha() or character.isspace())
 
-def get_ngrams(cleaned_text: str, n: int) -> list[str]:
+def get_ngrams(text: str, ngram_size: int) -> list[str]:
+    cleaned_text = clean_text(text)
     words = cleaned_text.split()
     
     ngrams = []
     for word in words:
-        if len(word) >= n:
-            word_ngrams = [word[i:i+n] for i in range(len(word)-n+1)]
+        if len(word) >= ngram_size:
+            word_ngrams = [word[i:i+ngram_size] for i in range(len(word)-ngram_size+1)]
             ngrams.extend(word_ngrams)
     
     return ngrams
 
 # all elements in ngram_list should be alphabetic & lowercase 
-def get_observed_frequencies(ngram_list: list[str]) -> dict[str, int]:
+def get_observed_frequencies(text: str, ngram_size: int) -> dict[str, int]:
     observed_frequencies = {}
-    for ngram in ngram_list:
+    ngrams = get_ngrams(text, ngram_size)
+
+    for ngram in ngrams:
         observed_frequencies[ngram] = observed_frequencies.get(ngram, 0) + 1
     
     return observed_frequencies
 
 def calculate_chi_squared_stat(
-    observed_frequencies: dict[str, int],
+    text: str,
+    ngram_size: int,
     normalised_expected_frequencies: dict[str, float]
 ) -> float:
+    observed_frequencies = get_observed_frequencies(text, ngram_size)
     text_length = sum(observed_frequencies.values())
     chi_squared_stat = 0
+    expected_frequencies = {k: v * text_length for k, v in normalised_expected_frequencies.items()}
 
-    for character, normalised_expected_freq in normalised_expected_frequencies.items():
-        observed_freq = observed_frequencies.get(character, 0)
-        expected_freq = normalised_expected_freq * text_length
+    for ngram, expected_freq in expected_frequencies.items():
+        observed_freq = observed_frequencies.get(ngram, 0)
         chi_squared_stat += ((observed_freq - expected_freq) ** 2) / expected_freq if expected_freq != 0 else 0
     
     return chi_squared_stat
