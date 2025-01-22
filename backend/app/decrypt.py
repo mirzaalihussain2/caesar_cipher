@@ -6,7 +6,8 @@ import logging
 from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
 from app.core.utils import normalize_key, count_alpha_characters
 from app.core.errors import InvalidKeyError
-from app.core.encryption import encrypt_message, transform_message, keys_table, hack_cypher
+from app.core.encryption import encrypt_message, transform_message
+from app.core.decryption import crack_cypher
 
 bp = Blueprint('decrypt', __name__)
 
@@ -15,7 +16,7 @@ def decrypt():
     try:
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
-            hack_cypher(data.message)
+            crack_cypher(data.message)
 
             response = ApiResponse(
                 success=True,

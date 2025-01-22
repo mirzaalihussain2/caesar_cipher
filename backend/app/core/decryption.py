@@ -6,12 +6,40 @@ from typing import TypedDict
 
 letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
 bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
-english_lang_freq: dict = load_json_file(letter_json_path)
+normalised_expected_frequencies: dict = load_json_file(letter_json_path)
 english_bigram_freq: dict = load_json_file(bigram_json_path)
 
 class SolutionText(TypedDict):
     key: int
     text: str
+
+class ScoredSolutionText(SolutionText):
+    chi_squared_stat: float
+
+def crack_cypher(ciphertext: str):
+    solutions = generate_all_solutions(ciphertext)
+    scored_solutions: list[ScoredSolutionText] = []
+
+    # for each solution
+        # clean text
+        # get ngrams
+        # get observed frequencies
+        # calculate chi-sq stat
+        # add to solution dictionary
+    for solution in solutions:
+        cleaned_text = clean_text(solution['text'])
+        ngram_list = get_ngrams(cleaned_text, 1)
+        observed_frequencies = get_observed_frequencies(ngram_list)
+        chi_squared_stat = calculate_chi_squared_stat(observed_frequencies, normalised_expected_frequencies)
+        scored_solutions.append({
+            'key': solution['key'],
+            'text': solution['text'],
+            'chi_squared_stat': chi_squared_stat
+        })
+
+    print(scored_solutions)
+    return scored_solutions
+
 
 def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
     solutions = []
@@ -25,8 +53,10 @@ def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
 
     return solutions
 
-def get_ngrams(text: str, n: int) -> list[str]:
-    cleaned_text: str = ''.join(char.lower() for char in text if char.isalpha() or char.isspace())
+def clean_text(text: str) -> str:
+    return ''.join(character.lower() for character in text if character.isalpha() or character.isspace())
+
+def get_ngrams(cleaned_text: str, n: int) -> list[str]:
     words = cleaned_text.split()
     
     ngrams = []
