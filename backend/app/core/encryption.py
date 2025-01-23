@@ -1,29 +1,29 @@
 from .utils import unigram_frequencies
 from .types import TransformCase
 
-def encrypt_message(original_message: str, key: int):
-    encrypted_message = ""
+def encrypt_text(original_text: str, key: int):
+    encrypted_text = ""
     alphabet = sorted(unigram_frequencies().keys())
 
-    for character in original_message:
+    for character in original_text:
         original_position = alphabet.index(character.lower()) if character.lower() in alphabet else None
         if original_position is None:
-            encrypted_message = encrypted_message + character
+            encrypted_text = encrypted_text + character
         else:
             encrypted_position = (original_position + key) % 26
             encrypted_character = alphabet[encrypted_position]
-            encrypted_message = encrypted_message + (encrypted_character.upper() if character.isupper() else encrypted_character)
+            encrypted_text = encrypted_text + (encrypted_character.upper() if character.isupper() else encrypted_character)
     
-    return encrypted_message
+    return encrypted_text
 
-def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase):
+def transform_text(text: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase):
     if transform_case == TransformCase.LOWERCASE:
-        message = message.lower()
+        text = text.lower()
     elif transform_case == TransformCase.UPPERCASE:
-        message = message.upper()
+        text = text.upper()
 
     chars = []
-    for char in message:
+    for char in text:
         if char == ' ':
             if keep_spaces:
                 chars.append(char)
@@ -35,5 +35,5 @@ def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, tr
         else:
             chars.append(char)  # always keep alphanumeric chars
     
-    transformed_message = ''.join(chars)
-    return transformed_message
+    transformed_text = ''.join(chars)
+    return transformed_text

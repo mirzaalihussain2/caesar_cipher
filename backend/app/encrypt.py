@@ -7,7 +7,7 @@ import inspect
 from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
 from app.core.utils import normalize_key
 from app.core.errors import InvalidKeyError
-from app.core.encryption import encrypt_message, transform_message
+from app.core.encryption import encrypt_text, transform_text
 
 bp = Blueprint('encrypt', __name__)
 
@@ -17,13 +17,13 @@ def encrypt():
         data = EncryptionRequest(**request.get_json())
         normalized_key = random.randint(1, 25) if data.key is None else normalize_key(data.key, 'encrypt')
 
-        encrypted_message = encrypt_message(data.message, normalized_key)
-        transformed_message = transform_message(encrypted_message, data.keep_spaces, data.keep_punctuation, data.transform_case)
+        encrypted_text = encrypt_text(data.text, normalized_key)
+        transformed_text = transform_text(encrypted_text, data.keep_spaces, data.keep_punctuation, data.transform_case)
 
         response = ApiResponse(
             success=True,
             data=[{
-                'text': transformed_message,
+                'text': transformed_text,
                 'key': normalized_key
             }]
         )

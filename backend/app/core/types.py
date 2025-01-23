@@ -24,7 +24,7 @@ class TransformCase(str, Enum):
     KEEP_CASE = "keep_case"
 
 class EncryptionRequest(BaseModel):
-    message: str = Field(..., max_length=5000, description="Message to be encrypted / decrypted")
+    text: str = Field(..., max_length=5000, description="Text to be encrypted / decrypted")
     key: Optional[int] = Field(None, description="Shift key for encryption / decryption")
     keep_spaces: Optional[bool] = Field(default=True, description='')
     keep_punctuation: Optional[bool] = Field(default=True, description='')

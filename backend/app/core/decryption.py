@@ -1,5 +1,5 @@
 from .utils import clean_text, count_alpha_characters, unigram_frequencies, bigram_frequencies
-from .encryption import encrypt_message
+from .encryption import encrypt_text
 from .types import Solution
 
 def get_chi_squared_stat(
@@ -53,7 +53,7 @@ def generate_all_solutions(ciphertext: str) -> list[Solution]:
     for key in range(26):
         solution = {
             'key': key,
-            'text': encrypt_message(ciphertext, key),
+            'text': encrypt_text(ciphertext, key),
             'chi_squared_stats': {},
             'chi_squared_total': None
         }

@@ -4,9 +4,9 @@ from http import HTTPStatus
 import inspect
 import logging
 from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
-from app.core.utils import normalize_key, count_alpha_characters
+from app.core.utils import normalize_key
 from app.core.errors import InvalidKeyError
-from app.core.encryption import encrypt_message, transform_message
+from app.core.encryption import encrypt_text, transform_text
 from app.core.decryption import hack_cypher
 
 bp = Blueprint('decrypt', __name__)
@@ -16,7 +16,7 @@ def decrypt():
     try:
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
-            solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cypher(data.message)]
+            solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cypher(data.text)]
 
             response = ApiResponse(
                 success=True,
@@ -26,13 +26,13 @@ def decrypt():
         else:
             key = -(data.key)
             normalized_key = normalize_key(key, 'decrypt')
-            decrypted_message = encrypt_message(data.message, normalized_key)
-            transformed_message = transform_message(decrypted_message, data.keep_spaces, data.keep_punctuation, data.transform_case)
+            decrypted_text = encrypt_text(data.text, normalized_key)
+            transformed_text = transform_text(decrypted_text, data.keep_spaces, data.keep_punctuation, data.transform_case)
             
             response = ApiResponse(
                 success=True,
                 data=[{
-                    'text': transformed_message,
+                    'text': transformed_text,
                     'key': normalized_key
                 }]
             )
