@@ -1,7 +1,6 @@
 from .utils import clean_text, count_alpha_characters, unigram_frequencies, bigram_frequencies
 from .encryption import encrypt_message
 from .types import Solution
-from pprint import pprint
 
 def get_chi_squared_stat(
         solutions: list[Solution],

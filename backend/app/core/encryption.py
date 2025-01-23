@@ -1,6 +1,5 @@
 from .utils import unigram_frequencies
 from .types import TransformCase
-from pprint import pprint
 
 def encrypt_message(original_message: str, key: int):
     encrypted_message = ""
@@ -38,10 +37,3 @@ def transform_message(message: str, keep_spaces: bool, keep_punctation: bool, tr
     
     transformed_message = ''.join(chars)
     return transformed_message
-
-def standardised_frequencies(frequency_dictionary: dict, alpha_message_length: int):
-    """ Standardising the chi-squared value for each letter / bigram to the alphabetical message length """
-    for key, frequency in frequency_dictionary.items():
-        frequency_dictionary[key] = round(frequency * alpha_message_length, 4)
-    
-    return frequency_dictionary

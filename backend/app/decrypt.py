@@ -37,11 +37,6 @@ def decrypt():
                 }]
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
-
-        # if key provided
-        # normalise key - raising error if key = 0 (i.e. message already decrpyted)
-        # or, if key = 0, then hack as usual
-        # or, if key = 0, return message to user & let them know that if they want to hack the message, then can
     
     except ValidationError as error:
         response = ApiResponse(
