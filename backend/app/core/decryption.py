@@ -7,8 +7,8 @@ from pprint import pprint
 
 letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
 bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
-normalised_expected_frequencies: dict = load_json_file(letter_json_path)
-english_bigram_freq: dict = load_json_file(bigram_json_path)
+unigram_expected_frequencies: dict = load_json_file(letter_json_path)
+bigram_expected_frequencies: dict = load_json_file(bigram_json_path)
 
 class SolutionText(TypedDict):
     key: int
@@ -16,44 +16,49 @@ class SolutionText(TypedDict):
     chi_squared_stats: dict[str, float]
     chi_squared_total: float | None
 
-class ScoredSolutionText(SolutionText):
-    chi_squared_stat: float
-
-
-# only use bigrams if ciphertext > 50 characters
-# otherwise only use letters / unigrams
-# doesn't make sense to do bigram compute if <50 characters
-
-def hacky_boi(
+def get_chi_squared_stat(
         solutions: list[SolutionText],
         ngram_size: int,
-        normalised_expected_frequencies: dict[str, float],
+        ngram_expected_frequencies: dict[str, float],
         stat_name: str
 ) -> list[SolutionText]:
     for solution in solutions:
         chi_squared_stat = calculate_chi_squared_stat(
             text=solution['text'],
             ngram_size=ngram_size,
-            normalised_expected_frequencies=normalised_expected_frequencies
+            normalised_expected_frequencies=ngram_expected_frequencies
         )
-        solution['chi_squared_stats'][stat_name] = chi_squared_stat
+        solution['chi_squared_stats'][stat_name] = round(chi_squared_stat, 4)
+
+        if solution['chi_squared_total'] is None:
+            solution['chi_squared_total'] = chi_squared_stat
+        else:
+            solution['chi_squared_total'] *= chi_squared_stat
+        
+        solution['chi_squared_total'] = round(solution['chi_squared_total'], 4)
     
     return solutions
 
-# maybe rename NORMALISED_EXPECTED_FREQUENCIES to NGRAM_EXPECTED_FREQUENCIES
-# because they pertain to specific NGRAMS (e.g. unigrams, bigrams, trigrams)
-def crack_cypher(ciphertext: str):
-
+def hack_cypher(ciphertext: str) -> list[SolutionText]:
     text_length = count_alpha_characters(ciphertext)
+    solutions = generate_all_solutions(ciphertext)
 
-    solutions = hacky_boi(
-        solutions=generate_all_solutions(ciphertext),
+    solutions = get_chi_squared_stat(
+        solutions=solutions,
         ngram_size=1,
-        normalised_expected_frequencies=normalised_expected_frequencies,
+        ngram_expected_frequencies=unigram_expected_frequencies,
         stat_name='unigrams'
     )
 
-    pprint(solutions)
+    if text_length > 50:
+        solutions = get_chi_squared_stat(
+            solutions=solutions,
+            ngram_size=2,
+            ngram_expected_frequencies=bigram_expected_frequencies,
+            stat_name='bigrams'
+        )
+    
+    solutions.sort(key=lambda x: x['chi_squared_total'])
     return solutions
 
 def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
@@ -110,26 +115,3 @@ def calculate_chi_squared_stat(
         chi_squared_stat += ((observed_freq - expected_freq) ** 2) / expected_freq if expected_freq != 0 else 0
     
     return chi_squared_stat
-
-
-
-# old functions
-def keys_table(letter_frequency_dictionary: dict, bigram_frequency_dictionary: dict):
-    letter_dict = {key: 0 for key in letter_frequency_dictionary.keys()}
-    bigram_dict = {key: 0 for key in bigram_frequency_dictionary.keys()}
-
-    keys_dict = dict()
-    for i in range(0, 26):
-        keys_dict[i] = ["", 0, letter_dict, letter_dict, 0, bigram_dict, bigram_dict, 0]
-    
-    for i in range(5):
-        print(f"Key {i}: {keys_dict[i]}")
-    return keys_dict
-
-def hack_cypher(message: str):    
-    letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
-    bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
-    english_lang_freq: dict = load_json_file(letter_json_path)
-    english_bigram_freq: dict = load_json_file(bigram_json_path)
-    
-    keys_table(english_lang_freq, english_bigram_freq)
