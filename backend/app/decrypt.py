@@ -16,6 +16,7 @@ def decrypt():
     try:
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
+            # if key not provided, hack the ciphertext
             solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cipher(data.text)]
             transformed_solutions = [{'key': s['key'], 'text': transform_text(s['text'], data.keep_spaces, data.keep_punctuation, data.transform_case), 'chi_squared_total': s['chi_squared_total']} for s in solutions]
 
@@ -25,6 +26,7 @@ def decrypt():
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
+            # if provided, decrypt ciphertext with key
             key = -(data.key)
             normalized_key = normalize_key(key, 'decrypt')
             decrypted_text = encrypt_text(data.text, normalized_key)

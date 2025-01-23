@@ -19,16 +19,16 @@ base_variations = [
 
 # Generate test cases for each encrypted message and its corresponding key
 test_cases = []
-encrypted_messages = [
-    dict(message="Mjqqt, Btwqi!", key=5),
-    dict(message="Uryyb, Jbeyq!", key=13),
-    dict(message="Zwddg, Ogjdv!", key=-8), # same as key=18, testing negative key
+encrypted_texts = [
+    dict(text="Mjqqt, Btwqi!", key=5),
+    dict(text="Uryyb, Jbeyq!", key=13),
+    dict(text="Zwddg, Ogjdv!", key=-8), # same as key=18, testing negative key
 ]
 
-for encrypted in encrypted_messages:
+for encrypted in encrypted_texts:
     for variation in base_variations:
         test_case = variation.copy()
-        test_case['message'] = encrypted['message']
+        test_case['text'] = encrypted['text']
         test_case['key'] = encrypted['key']
         test_cases.append(test_case)
 
@@ -36,7 +36,7 @@ for encrypted in encrypted_messages:
 def test_decryption_permutations(test_client, test_params):
     """Test all permutations of decryption parameters"""
     payload = {
-        "message": test_params["message"],
+        "text": test_params["text"],
         "key": test_params["key"],
         "keep_spaces": test_params["keep_spaces"],
         "keep_punctuation": test_params["keep_punctuation"],
@@ -46,4 +46,4 @@ def test_decryption_permutations(test_client, test_params):
     response = test_client.post('/decrypt', json=payload)
     assert response.status_code == 200
     assert response.json['success'] == True
-    assert response.json['data'] == test_params["expected"]
+    assert response.json['data'][0]['text'] == test_params["expected"]

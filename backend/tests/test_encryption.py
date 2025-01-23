@@ -49,7 +49,7 @@ test_cases = [
 def test_encryption_permutations(test_client, test_params):
     """Test all permutations of encryption parameters"""
     payload = {
-        "message": "Hello, World!",
+        "text": "Hello, World!",
         "key": test_params["key"],
         "keep_spaces": test_params["keep_spaces"],
         "keep_punctuation": test_params["keep_punctuation"],
@@ -59,4 +59,5 @@ def test_encryption_permutations(test_client, test_params):
     response = test_client.post('/encrypt', json=payload)
     assert response.status_code == 200
     assert response.json['success'] == True
-    assert response.json['data'] == test_params["expected"]
+    assert response.json['data'][0]['key'] == test_params["key"]
+    assert response.json['data'][0]['text'] == test_params["expected"]
