@@ -7,7 +7,7 @@ from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
 from app.core.utils import normalize_key
 from app.core.errors import InvalidKeyError
 from app.core.encryption import encrypt_text, transform_text
-from app.core.decryption import hack_cypher
+from app.core.hacking import hack_cypher
 
 bp = Blueprint('decrypt', __name__)
 

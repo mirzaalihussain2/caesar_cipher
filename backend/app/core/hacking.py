@@ -2,29 +2,6 @@ from .utils import clean_text, count_alpha_characters, unigram_frequencies, bigr
 from .encryption import encrypt_text
 from .types import Solution
 
-def get_chi_squared_stat(
-        solutions: list[Solution],
-        ngram_size: int,
-        ngram_expected_frequencies: dict[str, float],
-        stat_name: str
-) -> list[Solution]:
-    for solution in solutions:
-        chi_squared_stat = calculate_chi_squared_stat(
-            text=solution['text'],
-            ngram_size=ngram_size,
-            normalised_expected_frequencies=ngram_expected_frequencies
-        )
-        solution['chi_squared_stats'][stat_name] = round(chi_squared_stat, 4)
-
-        if solution['chi_squared_total'] is None:
-            solution['chi_squared_total'] = chi_squared_stat
-        else:
-            solution['chi_squared_total'] *= chi_squared_stat
-        
-        solution['chi_squared_total'] = round(solution['chi_squared_total'], 4)
-    
-    return solutions
-
 def hack_cypher(ciphertext: str) -> list[Solution]:
     text_length = count_alpha_characters(ciphertext)
     solutions = generate_all_solutions(ciphertext)
@@ -45,6 +22,29 @@ def hack_cypher(ciphertext: str) -> list[Solution]:
         )
     
     solutions.sort(key=lambda x: x['chi_squared_total'])
+    return solutions
+
+def get_chi_squared_stat(
+        solutions: list[Solution],
+        ngram_size: int,
+        ngram_expected_frequencies: dict[str, float],
+        stat_name: str
+) -> list[Solution]:
+    for solution in solutions:
+        chi_squared_stat = calculate_chi_squared_stat(
+            text=solution['text'],
+            ngram_size=ngram_size,
+            normalised_expected_frequencies=ngram_expected_frequencies
+        )
+        solution['chi_squared_stats'][stat_name] = round(chi_squared_stat, 4)
+
+        if solution['chi_squared_total'] is None:
+            solution['chi_squared_total'] = chi_squared_stat
+        else:
+            solution['chi_squared_total'] *= chi_squared_stat
+        
+        solution['chi_squared_total'] = round(solution['chi_squared_total'], 4)
+
     return solutions
 
 def generate_all_solutions(ciphertext: str) -> list[Solution]:
