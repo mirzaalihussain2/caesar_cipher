@@ -17,10 +17,11 @@ def decrypt():
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
             solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cipher(data.text)]
+            transformed_solutions = [{'key': s['key'], 'text': transform_text(s['text'], data.keep_spaces, data.keep_punctuation, data.transform_case), 'chi_squared_total': s['chi_squared_total']} for s in solutions]
 
             response = ApiResponse(
                 success=True,
-                data=solutions
+                data=transformed_solutions
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
