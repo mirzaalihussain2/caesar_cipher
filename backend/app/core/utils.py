@@ -33,3 +33,24 @@ def normalize_key(key: int, encrypt_or_decrypt: Literal['encrypt', 'decrypt'] = 
         raise InvalidKeyError(f"Key cannot be a multiple of 26. This won't {encrypt_or_decrypt} your text.")
 
     return normalized_key
+
+def get_ngrams(text: str, ngram_size: int) -> list[str]:
+    cleaned_text = clean_text(text)
+    words = cleaned_text.split()
+    
+    ngrams = []
+    for word in words:
+        if len(word) >= ngram_size:
+            word_ngrams = [word[i:i+ngram_size] for i in range(len(word)-ngram_size+1)]
+            ngrams.extend(word_ngrams)
+    
+    return ngrams
+
+def get_observed_frequencies(text: str, ngram_size: int) -> dict[str, int]:
+    observed_frequencies = {}
+    ngrams = get_ngrams(text, ngram_size)
+
+    for ngram in ngrams:
+        observed_frequencies[ngram] = observed_frequencies.get(ngram, 0) + 1
+    
+    return observed_frequencies

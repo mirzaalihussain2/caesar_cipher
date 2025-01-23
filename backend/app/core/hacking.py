@@ -1,12 +1,12 @@
-from .utils import clean_text, count_alpha_characters, unigram_frequencies, bigram_frequencies
+from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, get_observed_frequencies
 from .encryption import encrypt_text
 from .types import Solution
 
-def hack_cypher(ciphertext: str) -> list[Solution]:
+def hack_cipher(ciphertext: str) -> list[Solution]:
     text_length = count_alpha_characters(ciphertext)
     solutions = generate_all_solutions(ciphertext)
 
-    solutions = get_chi_squared_stat(
+    solutions = calculate_solution_statistics(
         solutions=solutions,
         ngram_size=1,
         ngram_expected_frequencies=unigram_frequencies(),
@@ -14,7 +14,7 @@ def hack_cypher(ciphertext: str) -> list[Solution]:
     )
 
     if text_length > 50:
-        solutions = get_chi_squared_stat(
+        solutions = calculate_solution_statistics(
             solutions=solutions,
             ngram_size=2,
             ngram_expected_frequencies=bigram_frequencies(),
@@ -24,7 +24,7 @@ def hack_cypher(ciphertext: str) -> list[Solution]:
     solutions.sort(key=lambda x: x['chi_squared_total'])
     return solutions
 
-def get_chi_squared_stat(
+def calculate_solution_statistics(
         solutions: list[Solution],
         ngram_size: int,
         ngram_expected_frequencies: dict[str, float],
@@ -60,27 +60,6 @@ def generate_all_solutions(ciphertext: str) -> list[Solution]:
         solutions.append(solution)
 
     return solutions
-
-def get_ngrams(text: str, ngram_size: int) -> list[str]:
-    cleaned_text = clean_text(text)
-    words = cleaned_text.split()
-    
-    ngrams = []
-    for word in words:
-        if len(word) >= ngram_size:
-            word_ngrams = [word[i:i+ngram_size] for i in range(len(word)-ngram_size+1)]
-            ngrams.extend(word_ngrams)
-    
-    return ngrams
-
-def get_observed_frequencies(text: str, ngram_size: int) -> dict[str, int]:
-    observed_frequencies = {}
-    ngrams = get_ngrams(text, ngram_size)
-
-    for ngram in ngrams:
-        observed_frequencies[ngram] = observed_frequencies.get(ngram, 0) + 1
-    
-    return observed_frequencies
 
 def calculate_chi_squared_stat(
     text: str,
