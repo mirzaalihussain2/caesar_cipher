@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from enum import Enum
-from typing import TypedDict
 
 class ErrorDetail(BaseModel):
     code: str
@@ -12,15 +11,19 @@ class ApiResponse(BaseModel):
     data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
 
-class Solution(TypedDict):
+class Solution(BaseModel):
     """
     Represents a possible solution when hacking a cipher.
     Lower chi_squared_total suggests better match to English language patterns.
     """
     key: int
     text: str
-    chi_squared_stats: dict[str, float]
     chi_squared_total: float | None
+    chi_squared_stats: dict[str, float]
+
+class ApiSolution(Solution):
+    """ Solution formatted for API responses. """
+    model_config = ConfigDict(json_schema_extra={"exclude": ["chi_squared_stats"]})
 
 class TransformCase(str, Enum):
     LOWERCASE = "lowercase"

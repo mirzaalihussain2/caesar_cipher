@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from http import HTTPStatus
 import inspect
 import logging
-from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
+from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
 from app.core.utils import normalize_key
 from app.core.errors import InvalidKeyError
 from app.core.encryption import encrypt_text, transform_text
@@ -17,8 +17,8 @@ def decrypt():
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
             # if key not provided, hack the ciphertext
-            solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cipher(data.text)]
-            transformed_solutions = [{'key': s['key'], 'text': transform_text(s['text'], data.keep_spaces, data.keep_punctuation, data.transform_case), 'chi_squared_total': s['chi_squared_total']} for s in solutions]
+            solutions: list[ApiSolution] = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cipher(data.text)]
+            transformed_solutions: list[ApiSolution] = [{'key': s['key'], 'text': transform_text(s['text'], data.keep_spaces, data.keep_punctuation, data.transform_case), 'chi_squared_total': s['chi_squared_total']} for s in solutions]
 
             response = ApiResponse(
                 success=True,
