@@ -3,6 +3,7 @@ from .encryption import encrypt_message
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 from typing import TypedDict
+from pprint import pprint
 
 letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
 bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
@@ -12,41 +13,48 @@ english_bigram_freq: dict = load_json_file(bigram_json_path)
 class SolutionText(TypedDict):
     key: int
     text: str
+    chi_squared_stats: dict[str, float]
+    chi_squared_total: float | None
 
 class ScoredSolutionText(SolutionText):
     chi_squared_stat: float
 
-def crack_cypher(ciphertext: str):
-    solutions = generate_all_solutions(ciphertext)
-    scored_solutions: list[ScoredSolutionText] = []
-    text_length = count_alpha_characters(ciphertext)
 
-    # for each
-    # [
-    #   { ngram_size: 1, ngram_frequencies: letter_frequencies },
-    #   { ngram_size: 2, ngram_frequencies: bigram_frequencies },
-    #   { ngram_size: 3, ngram_frequencies: trigram_frequencies },
-    #   { ngram_size: 4, ngram_frequencies: quadgram_frequencies }
-    # ]
-    # work out the chi-squared stat
-    # append { 'chi_squared_stat_1gram': chi_squared_stat_1gram }
+# only use bigrams if ciphertext > 50 characters
+# otherwise only use letters / unigrams
+# doesn't make sense to do bigram compute if <50 characters
 
+def hacky_boi(
+        solutions: list[SolutionText],
+        ngram_size: int,
+        normalised_expected_frequencies: dict[str, float],
+        stat_name: str
+) -> list[SolutionText]:
     for solution in solutions:
         chi_squared_stat = calculate_chi_squared_stat(
             text=solution['text'],
-            ngram_size=1,
+            ngram_size=ngram_size,
             normalised_expected_frequencies=normalised_expected_frequencies
         )
+        solution['chi_squared_stats'][stat_name] = chi_squared_stat
+    
+    return solutions
 
-        scored_solutions.append({
-            'key': solution['key'],
-            'text': solution['text'],
-            'chi_squared_stat': chi_squared_stat
-        })
+# maybe rename NORMALISED_EXPECTED_FREQUENCIES to NGRAM_EXPECTED_FREQUENCIES
+# because they pertain to specific NGRAMS (e.g. unigrams, bigrams, trigrams)
+def crack_cypher(ciphertext: str):
 
-    print(scored_solutions)
-    return scored_solutions
+    text_length = count_alpha_characters(ciphertext)
 
+    solutions = hacky_boi(
+        solutions=generate_all_solutions(ciphertext),
+        ngram_size=1,
+        normalised_expected_frequencies=normalised_expected_frequencies,
+        stat_name='unigrams'
+    )
+
+    pprint(solutions)
+    return solutions
 
 def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
     solutions = []
@@ -54,7 +62,9 @@ def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
     for key in range(26):
         solution = {
             'key': key,
-            'text': encrypt_message(ciphertext, key)
+            'text': encrypt_message(ciphertext, key),
+            'chi_squared_stats': {},
+            'chi_squared_total': None
         }
         solutions.append(solution)
 
