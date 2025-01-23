@@ -1,4 +1,4 @@
-from .utils import load_json_file
+from .utils import load_json_file, count_alpha_characters
 from .encryption import encrypt_message
 import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -19,13 +19,18 @@ class ScoredSolutionText(SolutionText):
 def crack_cypher(ciphertext: str):
     solutions = generate_all_solutions(ciphertext)
     scored_solutions: list[ScoredSolutionText] = []
+    text_length = count_alpha_characters(ciphertext)
 
-    # for each solution
-        # clean text
-        # get ngrams
-        # get observed frequencies
-        # calculate chi-sq stat
-        # add to solution dictionary
+    # for each
+    # [
+    #   { ngram_size: 1, ngram_frequencies: letter_frequencies },
+    #   { ngram_size: 2, ngram_frequencies: bigram_frequencies },
+    #   { ngram_size: 3, ngram_frequencies: trigram_frequencies },
+    #   { ngram_size: 4, ngram_frequencies: quadgram_frequencies }
+    # ]
+    # work out the chi-squared stat
+    # append { 'chi_squared_stat_1gram': chi_squared_stat_1gram }
+
     for solution in solutions:
         chi_squared_stat = calculate_chi_squared_stat(
             text=solution['text'],
