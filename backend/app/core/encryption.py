@@ -1,14 +1,10 @@
-from .utils import load_json_file, count_alpha_characters
+from .utils import unigram_frequencies
 from .types import TransformCase
-import os
 from pprint import pprint
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def encrypt_message(original_message: str, key: int):
     encrypted_message = ""
-    json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
-    alphabet = sorted(load_json_file(json_path).keys())
+    alphabet = sorted(unigram_frequencies().keys())
 
     for character in original_message:
         original_position = alphabet.index(character.lower()) if character.lower() in alphabet else None

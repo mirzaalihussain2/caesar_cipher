@@ -1,27 +1,14 @@
-from .utils import load_json_file, count_alpha_characters
+from .utils import clean_text, count_alpha_characters, unigram_frequencies, bigram_frequencies
 from .encryption import encrypt_message
-import os
-current_dir = os.path.dirname(os.path.abspath(__file__))
-from typing import TypedDict
+from .types import Solution
 from pprint import pprint
 
-letter_json_path = os.path.join(current_dir, '..', 'data', 'letter_frequencies.json')
-bigram_json_path = os.path.join(current_dir, '..', 'data', 'bigram_frequencies.json')
-unigram_expected_frequencies: dict = load_json_file(letter_json_path)
-bigram_expected_frequencies: dict = load_json_file(bigram_json_path)
-
-class SolutionText(TypedDict):
-    key: int
-    text: str
-    chi_squared_stats: dict[str, float]
-    chi_squared_total: float | None
-
 def get_chi_squared_stat(
-        solutions: list[SolutionText],
+        solutions: list[Solution],
         ngram_size: int,
         ngram_expected_frequencies: dict[str, float],
         stat_name: str
-) -> list[SolutionText]:
+) -> list[Solution]:
     for solution in solutions:
         chi_squared_stat = calculate_chi_squared_stat(
             text=solution['text'],
@@ -39,14 +26,14 @@ def get_chi_squared_stat(
     
     return solutions
 
-def hack_cypher(ciphertext: str) -> list[SolutionText]:
+def hack_cypher(ciphertext: str) -> list[Solution]:
     text_length = count_alpha_characters(ciphertext)
     solutions = generate_all_solutions(ciphertext)
 
     solutions = get_chi_squared_stat(
         solutions=solutions,
         ngram_size=1,
-        ngram_expected_frequencies=unigram_expected_frequencies,
+        ngram_expected_frequencies=unigram_frequencies(),
         stat_name='unigrams'
     )
 
@@ -54,14 +41,14 @@ def hack_cypher(ciphertext: str) -> list[SolutionText]:
         solutions = get_chi_squared_stat(
             solutions=solutions,
             ngram_size=2,
-            ngram_expected_frequencies=bigram_expected_frequencies,
+            ngram_expected_frequencies=bigram_frequencies(),
             stat_name='bigrams'
         )
     
     solutions.sort(key=lambda x: x['chi_squared_total'])
     return solutions
 
-def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
+def generate_all_solutions(ciphertext: str) -> list[Solution]:
     solutions = []
 
     for key in range(26):
@@ -75,9 +62,6 @@ def generate_all_solutions(ciphertext: str) -> list[SolutionText]:
 
     return solutions
 
-def clean_text(text: str) -> str:
-    return ''.join(character.lower() for character in text if character.isalpha() or character.isspace())
-
 def get_ngrams(text: str, ngram_size: int) -> list[str]:
     cleaned_text = clean_text(text)
     words = cleaned_text.split()
@@ -90,7 +74,6 @@ def get_ngrams(text: str, ngram_size: int) -> list[str]:
     
     return ngrams
 
-# all elements in ngram_list should be alphabetic & lowercase 
 def get_observed_frequencies(text: str, ngram_size: int) -> dict[str, int]:
     observed_frequencies = {}
     ngrams = get_ngrams(text, ngram_size)

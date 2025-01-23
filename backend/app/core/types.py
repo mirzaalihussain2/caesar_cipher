@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from enum import Enum
+from typing import TypedDict
 
 class ErrorDetail(BaseModel):
     code: str
@@ -10,6 +11,12 @@ class ApiResponse(BaseModel):
     success: bool
     data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
+
+class Solution(TypedDict):
+    key: int
+    text: str
+    chi_squared_stats: dict[str, float]
+    chi_squared_total: float | None
 
 class TransformCase(str, Enum):
     LOWERCASE = "lowercase"
