@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
+from typing import Optional
 from enum import Enum
 
 class ErrorDetail(BaseModel):
@@ -8,8 +8,7 @@ class ErrorDetail(BaseModel):
 
 class ApiResponse(BaseModel):
     success: bool
-    data: Optional[str] = None
-    metadata: Optional[Dict] = None
+    data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
 
 class TransformCase(str, Enum):

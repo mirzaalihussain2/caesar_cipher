@@ -22,8 +22,10 @@ def encrypt():
 
         response = ApiResponse(
             success=True,
-            data=transformed_message,
-            metadata={'key':normalized_key}
+            data=[{
+                'text': transformed_message,
+                'key': normalized_key
+            }]
         )
         return jsonify(response.model_dump()), HTTPStatus.OK
 

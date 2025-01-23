@@ -16,11 +16,11 @@ def decrypt():
     try:
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
-            solutions = [{'key': s.key, 'text': s.text, 'chi_squared_total': s.chi_squared_total} for s in hack_cypher(data.message)]
+            solutions = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cypher(data.message)]
 
             response = ApiResponse(
                 success=True,
-                data="hacked message"
+                data=solutions
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
@@ -31,8 +31,10 @@ def decrypt():
             
             response = ApiResponse(
                 success=True,
-                data=transformed_message,
-                metadata={'key':normalized_key}
+                data=[{
+                    'text': transformed_message,
+                    'key': normalized_key
+                }]
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
 
