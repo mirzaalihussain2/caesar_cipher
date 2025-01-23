@@ -3,6 +3,11 @@ from .encryption import encrypt_text
 from .types import Solution
 
 def hack_cipher(ciphertext: str) -> list[Solution]:
+    """
+    Hacks simple Caesar cipher using frequency analysis (in English).
+    Uses chi-squared test to compare text frequencies with English language frequencies.
+    Returns possible solutions sorted by likelihood (lowest chi-squared value = best match).
+    """
     text_length = count_alpha_characters(ciphertext)
     solutions = generate_all_solutions(ciphertext)
 

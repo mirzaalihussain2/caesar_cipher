@@ -13,6 +13,10 @@ class ApiResponse(BaseModel):
     error: Optional[ErrorDetail] = None
 
 class Solution(TypedDict):
+    """
+    Represents a possible solution when hacking a cipher.
+    Lower chi_squared_total suggests better match to English language patterns.
+    """
     key: int
     text: str
     chi_squared_stats: dict[str, float]
