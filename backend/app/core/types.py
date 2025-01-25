@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, Field, ConfigDict, field_validator
+from typing import Optional, Annotated
 from enum import Enum
 
 class ErrorDetail(BaseModel):
@@ -36,3 +36,10 @@ class EncryptionRequest(BaseModel):
     keep_spaces: Optional[bool] = Field(default=True, description='')
     keep_punctuation: Optional[bool] = Field(default=True, description='')
     transform_case: TransformCase = Field(default=TransformCase.KEEP_CASE, description='')
+
+    @field_validator('text')
+    @classmethod
+    def validate_non_empty_text(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Text cannot be empty")
+        return v

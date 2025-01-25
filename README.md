@@ -12,14 +12,15 @@ Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacO
 - JSON files
 <br><br>
 
-# API requests
+# API information
+## Routes
 This API serves only two routes:
 - `/encrypt`
 - `/decrypt`
 
 A 'Hello, World!' smoke test is served on `/` route
 
-## Parameters
+## Request & response parameters
 All requests are `POST` requests and must include the header `Content-Type: application/json`. All routes take the same parameters:
 
 | **parameter** | **required?** | **type** | **default value** | **description** | **details** |
@@ -29,6 +30,24 @@ All requests are `POST` requests and must include the header `Content-Type: appl
 | `keep_spaces` | optional | `boolean` | `True` | whether to keep whitepsace in return string |
 | `keep_punctuation` | optional | `boolean` | `True` | whether to keep punctuation in return string |
 | `transform_case` | optional | `lowercase`, `uppercase`, `keep_case` | `keep_case` | whether to maintain input case or transform return string to uppercase / lowercase |
+
+All API responses have the following shape:
+```JSON
+{
+    "success": boolean,
+    "data": array | null,
+    "error": {
+        "code": string,
+        "message": string
+    } | null
+}
+```
+
+### Errors
+1. `VALIDATION_ERROR`: 
+2. `INVALID_KEY`: Key is either 0 or 26, which will not encrypt / decrypt text.
+3. `INTERNAL_ERROR`
+
 
 ## Operations
 ### Encryption (`/encrypt` route)
@@ -168,3 +187,7 @@ Caesar cipher encrypter and decrypter. Decrypter uses letter frequencies in Engl
 - imoplement frontend
 
 - for longer strings, a strategy would be to calculate key on a substring and then apply that key to rest of string - for a 5000 char string, find correct key on 1000 char string and then apply to rest of string
+
+- error-handling:
+    - for encrypting / decrypting / hacking text: empty string should return an validation error
+    - "text": 99 - i.e. number rather than string for text param returns VALIDATION_ERROR, but missing value returns 500 INTERNAL_SERVER_ERROR when text param is empty or has string (not in quotation marks).
