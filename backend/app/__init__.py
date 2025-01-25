@@ -12,7 +12,7 @@ def create_app(config_class=Config):
     app.register_blueprint(encrypt_bp)
     app.register_blueprint(decrypt_bp)
 
-    @app.route('/hello', methods=['GET'])
+    @app.route('/', methods=['GET'])
     def api_endpoint():
         return {
             "message": "Hello, World!",

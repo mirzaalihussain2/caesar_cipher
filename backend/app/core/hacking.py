@@ -55,7 +55,7 @@ def calculate_solution_statistics(
 def generate_all_solutions(ciphertext: str) -> list[Solution]:
     solutions = []
 
-    for key in range(26):
+    for key in range(1, 26):
         solution = {
             'key': key,
             'text': encrypt_text(ciphertext, key),
