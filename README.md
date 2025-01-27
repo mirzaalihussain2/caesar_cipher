@@ -35,7 +35,15 @@ All API responses have the following shape:
 ```JSON
 {
     "success": boolean,
-    "data": array | null,
+    "data": [
+        {
+            "text": string,
+            "key": integer
+            // depending on operation,
+            // dictionary may contain other key-value pairs
+        }
+        // ... array may contain many elements
+    ] | null,
     "error": {
         "code": string,
         "message": string
@@ -44,78 +52,34 @@ All API responses have the following shape:
 ```
 
 ### Errors
-1. `VALIDATION_ERROR`: 
+1. `VALIDATION_ERROR`: Invalid input for request parameter (e.g. passing string to `key` param)
 2. `INVALID_KEY`: Key is either 0 or 26, which will not encrypt / decrypt text.
-3. `INTERNAL_ERROR`
-
 
 ## Operations
+This API performs 3 functions: encrypt, decrypt, hack.
+
 ### Encryption (`/encrypt` route)
 
 - If `key` is not provided to `/encrypt` route, a random key is generated and used.
 - If `key` provided is 0 or a multiple of 26, API will raise an invalid key error.
 
-#### Example POST request for Encryption operation
+#### Example POST request
 ```JSON
 {
-    "text": "Hello world",
+    "text": "Hello, World!",
     "key": 9,
     "keep_punctuation": false,
     "transform_case": "keep_case"
 }
 ```
 
-### Decryption (`/decrypt` route)
-
-- If `key` is provided to `/decrypt` route, then ciphertext will be derypted using that one specific key.
-- Like `/encrypt` route above, if `key` provided is 0 or a multiple of 26, API will raise an invalid key error.
-
-#### Example POST request for Decryption operation
-```JSON
-{
-    "text": " ", # add hello world, shifted by key of 9
-    "key": 17,
-    "keep_spaces": true,
-    "transform_case": "lowercase"
-}
-```
-
-### Hacking (`/decrypt` route)
-
-- If `key` is NOT provided to `/decrypt` route, then ciphertext will be hacked using frequency analysis.
-- A list of possible plaintext solutions will be returned by the API, ordered by best matches first.
-- Frequency analysis is best at hacking ciphers longer than 100 characters.
-
-#### Example POST request for Hacking operation
-
-```JSON
-{
-    "text": "R'v qjerwp j panjc crvn nwlahycrwp jwm mnlahycrwp Ljnbja lryqnab frcq cqrb JYR. R fxwmna qxf R ljw kdrum dyxw rc vhbnuo.",
-}
-```
-
-# API responses
-
-## Shape of API response
-All API responses have the following shape:
-```JSON
-{
-    "success": boolean,
-    "data": array | null,
-    "error": {
-        "code": string,
-        "message": string
-    } | null
-}
-```
-
-#### Example API response for Encryption operation (following example above)
+#### Example API response
 ```JSON
 {
     "data": [
         {
             "key": 9,
-            "text": "Qnuux fxaum"
+            "text": "Qnuux Fxaum"
         }
     ],
     "error": null,
@@ -123,7 +87,24 @@ All API responses have the following shape:
 }
 ```
 
-#### Example API response for Decyption operation (following example above)
+### Decryption (`/decrypt` route)
+
+- If `key` is provided to `/decrypt` route, then ciphertext will be derypted with the context that the key provided was the encryption key.
+- The `key` in the API response is the decryption key (`encryption key` + `decryption key` = 26).
+- Like `/encrypt` route above, if `key` provided is 0 or a multiple of 26, API will raise an invalid key error.
+
+
+#### Example POST request
+```JSON
+{
+    "text": "Qnuux Fxaum",
+    "key": 9,
+    "keep_spaces": true,
+    "transform_case": "lowercase"
+}
+```
+
+#### Example API response
 ```JSON
 {
     "data": [
@@ -137,7 +118,21 @@ All API responses have the following shape:
 }
 ```
 
-#### Example API response for Hacking operation
+### Hacking (`/decrypt` route)
+
+- If `key` is NOT provided to `/decrypt` route, then ciphertext will be hacked using frequency analysis.
+- A list of possible plaintext solutions will be returned by the API, ordered by best matches first.
+- Frequency analysis is best at hacking ciphers longer than 100 characters.
+
+#### Example POST request
+
+```JSON
+{
+    "text": "R'v qjerwp j panjc crvn nwlahycrwp jwm mnlahycrwp Ljnbja lryqnab frcq cqrb JYR. R fxwmna qxf R ljw kdrum dyxw rc vhbnuo.",
+}
+```
+
+#### Example API response
 ```JSON
 {
     "data": [
@@ -173,7 +168,42 @@ All API responses have the following shape:
 }
 ```
 
-TESTS
+# Running backend
+## Setup
+1. Check you have Python 3.11 installed, a specific version number should be returned in the Terminal (e.g. `Python 3.11.11`).
+    ```bash
+    python3.11 --version
+    ```
+<br>
+
+2. Navigate to `backend` folder and create an `.env.local` file (copying `.env.example`).
+    ``` bash
+    cd backend && cp .env.example .env.local
+    ```
+<br>
+
+## Running backend locally
+The backend can be run:
+* within a virtual environment or a docker container
+* in development or production mode
+
+<br>
+
+From the backend folder, there are 4 ways to run the backend:
+| **environment** | **mode** | **command** |
+|----------------|----------|--------------|
+| virtual env | dev | `./boot.sh venv dev` |
+| virtual env | prod | `./boot.sh venv prod` |
+| docker | dev | `./boot.sh docker dev` |
+| docker | prod | `./boot.sh docker prod` |  
+
+Backend served at [http://localhost:8080](http://localhost:8080) - only route available is 'Hello, World!' smoke test on index route (`/`).
+<br><br>
+
+
+
+
+# TESTING
 - Tests for all 3 operations: encryption, decryption and hacking. Encryption & decryption also include lots of variations of transforming the text (e.g. keeping or removing spaces, keeping or removing space, keeping or changing the case).
 - Didn't do unit tests for specific functions, as all those functions are required to work for the API tests to work. So if specific functions fail, this'll be reflected in API tests failing for our routes.
 
@@ -187,7 +217,3 @@ Caesar cipher encrypter and decrypter. Decrypter uses letter frequencies in Engl
 - imoplement frontend
 
 - for longer strings, a strategy would be to calculate key on a substring and then apply that key to rest of string - for a 5000 char string, find correct key on 1000 char string and then apply to rest of string
-
-- error-handling:
-    - for encrypting / decrypting / hacking text: empty string should return an validation error
-    - "text": 99 - i.e. number rather than string for text param returns VALIDATION_ERROR, but missing value returns 500 INTERNAL_SERVER_ERROR when text param is empty or has string (not in quotation marks).
