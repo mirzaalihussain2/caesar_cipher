@@ -5,6 +5,8 @@ import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(CURRENT_DIR, '..', 'data')
+MIN_BIGRAM_TEXT_LENGTH = 100
+TRUNCATE_TEXT_LENGTH = 1000
 
 def load_json_file(filepath):
     with open(filepath, 'r') as f:

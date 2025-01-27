@@ -1,4 +1,4 @@
-from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, get_observed_frequencies
+from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, get_observed_frequencies, MIN_BIGRAM_TEXT_LENGTH
 from .encryption import encrypt_text
 from .types import Solution
 
@@ -18,7 +18,7 @@ def hack_cipher(ciphertext: str) -> list[Solution]:
         stat_name='unigrams'
     )
 
-    if text_length > 50:
+    if text_length > MIN_BIGRAM_TEXT_LENGTH:
         solutions = calculate_solution_statistics(
             solutions=solutions,
             ngram_size=2,
