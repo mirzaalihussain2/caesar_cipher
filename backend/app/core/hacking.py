@@ -1,7 +1,7 @@
 from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, MIN_BIGRAM_TEXT_LENGTH, DECIMAL_PLACES
 from .encryption import encrypt_text
 from .types import Solution, SolutionWithTotal, StatName
-from .statistics import run_chi_squared_test, normalise_chi_squared_stats, calculate_chi_squared_total
+from .statistics import run_chi_squared_test, normalise_chi_squared_stats, calculate_chi_squared_total, calculate_confidence
 
 def hack_cipher(ciphertext: str) -> list[SolutionWithTotal]:
     """
@@ -28,6 +28,7 @@ def hack_cipher(ciphertext: str) -> list[SolutionWithTotal]:
         )
     
     solutionsWithTotals = calculate_chi_squared_total(solutions, text_length)
+    calculate_confidence(solutionsWithTotals)
     return sorted(solutionsWithTotals, key=lambda x: x['chi_squared_total'])
 
 def add_solution_statistics(
