@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Optional, Annotated
+from typing import Optional, Literal
 from enum import Enum
+
+class StatName(str, Enum):
+    UNIGRAM = 'unigram'
+    BIGRAM = 'bigram'
+    # TRIGRAM = 'trigram'
+    # QUADGRAM = 'quadgram'
 
 class ErrorDetail(BaseModel):
     code: str
@@ -11,6 +17,19 @@ class ApiResponse(BaseModel):
     data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
 
+# BaseSolution
+    # key
+    # text
+
+# WorkingSolution
+    # ADD: chi_squared_stats
+
+# NormalisedSolution
+    # ADD: normalised_chi_squared_stats
+
+# SolutionWithTotal
+    # ADD: chi_squared_total
+
 class Solution(BaseModel):
     """
     Represents a possible solution when hacking a cipher.
@@ -18,12 +37,16 @@ class Solution(BaseModel):
     """
     key: int
     text: str
+    chi_squared_stats: dict[StatName, float]
+    normalised_chi_squared_stats: dict[StatName, float]
+
+class SolutionWithTotal(Solution):
+    """ Solution with calculated chi-squared total """
     chi_squared_total: float | None
-    chi_squared_stats: dict[str, float]
 
 class ApiSolution(Solution):
     """ Solution formatted for API responses. """
-    model_config = ConfigDict(json_schema_extra={"exclude": ["chi_squared_stats"]})
+    model_config = ConfigDict(json_schema_extra={"exclude": ["chi_squared_stats", "normalised_chi_squared_stats"]})
 
 class TransformCase(str, Enum):
     LOWERCASE = "lowercase"

@@ -1,12 +1,14 @@
 from typing import Literal
 import json
 from .errors import InvalidKeyError
+from .types import StatName
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(CURRENT_DIR, '..', 'data')
 MIN_BIGRAM_TEXT_LENGTH = 100
 TRUNCATE_TEXT_LENGTH = 1000
+DECIMAL_PLACES = 5
 
 def load_json_file(filepath):
     with open(filepath, 'r') as f:
@@ -19,6 +21,12 @@ def unigram_frequencies():
 def bigram_frequencies():
     filepath = os.path.join(DATA_DIR, 'bigram_frequencies.json')
     return load_json_file(filepath)
+
+def get_ngram_weight(stat_name: StatName, text_length: int) -> float:
+    weight_unigram = max(0.5, 1 - (0.0002*text_length))
+    weight_bigram = 1 - weight_unigram
+
+    return round(weight_unigram if stat_name == StatName.UNIGRAM else weight_bigram, DECIMAL_PLACES)
 
 def count_alpha_characters(text: str) -> int:
     return sum(1 for character in text if character.isalpha())
