@@ -6,7 +6,7 @@ import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(CURRENT_DIR, '..', 'data')
-MIN_BIGRAM_TEXT_LENGTH = 100
+MIN_BIGRAM_TEXT_LENGTH = 200
 TRUNCATE_TEXT_LENGTH = 1000
 DECIMAL_PLACES = 5
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Optional, Literal
+from typing import Optional
 from enum import Enum
 
 class StatName(str, Enum):
@@ -17,19 +17,6 @@ class ApiResponse(BaseModel):
     data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
 
-# BaseSolution
-    # key
-    # text
-
-# WorkingSolution
-    # ADD: chi_squared_stats
-
-# NormalisedSolution
-    # ADD: normalised_chi_squared_stats
-
-# SolutionWithTotal
-    # ADD: chi_squared_total
-
 class Solution(BaseModel):
     """
     Represents a possible solution when hacking a cipher.
@@ -44,7 +31,7 @@ class SolutionWithTotal(Solution):
     """ Solution with calculated chi-squared total """
     chi_squared_total: float | None
 
-class ApiSolution(Solution):
+class ApiSolution(SolutionWithTotal):
     """ Solution formatted for API responses. """
     model_config = ConfigDict(json_schema_extra={"exclude": ["chi_squared_stats", "normalised_chi_squared_stats"]})
 
