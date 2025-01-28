@@ -1,6 +1,6 @@
-from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, get_observed_frequencies, MIN_BIGRAM_TEXT_LENGTH
+from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, get_observed_frequencies, get_ngram_weight, MIN_BIGRAM_TEXT_LENGTH, DECIMAL_PLACES
 from .encryption import encrypt_text
-from .types import Solution
+from .types import Solution, SolutionWithTotal, StatName
 
 def hack_cipher(ciphertext: str) -> list[Solution]:
     """
@@ -15,7 +15,7 @@ def hack_cipher(ciphertext: str) -> list[Solution]:
         solutions=solutions,
         ngram_size=1,
         ngram_expected_frequencies=unigram_frequencies(),
-        stat_name='unigrams'
+        stat_name=StatName.UNIGRAM
     )
 
     if text_length > MIN_BIGRAM_TEXT_LENGTH:
@@ -23,17 +23,50 @@ def hack_cipher(ciphertext: str) -> list[Solution]:
             solutions=solutions,
             ngram_size=2,
             ngram_expected_frequencies=bigram_frequencies(),
-            stat_name='bigrams'
+            stat_name=StatName.BIGRAM
         )
     
-    solutions.sort(key=lambda x: x['chi_squared_total'])
-    return solutions
+    solutionsWithTotals = calculate_chi_squared_total(solutions, text_length)
+    return solutionsWithTotals
+
+def calculate_chi_squared_total(
+        solutions: list[Solution],
+        text_length: int
+) -> list[SolutionWithTotal]:
+    # Check if unigram stats exist for all solutions
+    if not all(StatName.UNIGRAM in solution['normalised_chi_squared_stats'] for solution in solutions):
+        raise ValueError("All solutions must have at least one normalised chi-squared stat before computing chi-squared total")
+    else:
+        if not all(StatName.BIGRAM in solution['normalised_chi_squared_stats'] for solution in solutions):
+            # Update with unigram stats only
+            for solution in solutions:
+                solution['chi_squared_total'] = solution['chi_squared_stats'][StatName.UNIGRAM]
+        else:
+            # Update with weighted combination of unigram and bigram stats
+            for solution in solutions:
+                weighted_unigram_stat = get_ngram_weight(StatName.UNIGRAM, text_length) * solution['normalised_chi_squared_stats'][StatName.UNIGRAM]
+                weighted_bigram_stat = get_ngram_weight(StatName.BIGRAM, text_length) * solution['normalised_chi_squared_stats'][StatName.BIGRAM]
+                solution['chi_squared_total'] = round(weighted_unigram_stat + weighted_bigram_stat, DECIMAL_PLACES)
+    
+    return sorted(solutions, key=lambda x: x['chi_squared_total'])
+
+def normalise_chi_stats(
+        solutions: list[Solution],
+        stat_name: StatName
+) -> list[Solution]:
+    if not all(stat_name in solution['chi_squared_stats'] for solution in solutions):
+        raise ValueError(f"All solutions must have {StatName} chi_squared stats before normalising values")
+    else:
+        max_stat = max(solution['chi_squared_stats'][stat_name] for solution in solutions)
+        for solution in solutions:
+            solution['normalised_chi_squared_stats'][stat_name] = round(solution['chi_squared_stats'][stat_name] / max_stat, DECIMAL_PLACES)
+        return solutions
 
 def calculate_solution_statistics(
         solutions: list[Solution],
         ngram_size: int,
-        ngram_expected_frequencies: dict[str, float],
-        stat_name: str
+        ngram_expected_frequencies: dict[StatName, float],
+        stat_name: StatName
 ) -> list[Solution]:
     for solution in solutions:
         chi_squared_stat = calculate_chi_squared_stat(
@@ -41,16 +74,14 @@ def calculate_solution_statistics(
             ngram_size=ngram_size,
             normalised_expected_frequencies=ngram_expected_frequencies
         )
-        solution['chi_squared_stats'][stat_name] = round(chi_squared_stat, 4)
+        solution['chi_squared_stats'][stat_name] = round(chi_squared_stat, DECIMAL_PLACES)
+    
+    normalised_solutions = normalise_chi_stats(
+        solutions=solutions,
+        stat_name=stat_name
+    )
 
-        if solution['chi_squared_total'] is None:
-            solution['chi_squared_total'] = chi_squared_stat
-        else:
-            solution['chi_squared_total'] *= chi_squared_stat
-        
-        solution['chi_squared_total'] = round(solution['chi_squared_total'], 4)
-
-    return solutions
+    return normalised_solutions
 
 def generate_all_solutions(ciphertext: str) -> list[Solution]:
     solutions = []
@@ -60,7 +91,8 @@ def generate_all_solutions(ciphertext: str) -> list[Solution]:
             'key': key,
             'text': encrypt_text(ciphertext, key),
             'chi_squared_stats': {},
-            'chi_squared_total': None
+            'normalised_chi_squared_stats': {},
+            'chi_squared_total': None,
         }
         solutions.append(solution)
 
