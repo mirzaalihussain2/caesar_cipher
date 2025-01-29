@@ -1,6 +1,6 @@
 import statistics
-from .utils import get_observed_frequencies, get_ngram_weight, DECIMAL_PLACES
-from .types import Solution, SolutionWithTotal, StatName
+from .utils import get_observed_frequencies, get_ngram_weight, DECIMAL_PLACES, CONFIDENCE_THRESHOLDS
+from .types import Solution, SolutionWithTotal, StatName, ConfidenceLevel
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
@@ -89,6 +89,27 @@ def display_distribution(solutionsWithTotals: list[SolutionWithTotal]):
     # Save to file
     plt.savefig(filepath)
     plt.close()  # Close the figure to free memory
+
+def determine_confidence(separation_score: float, relative_rank: float) -> ConfidenceLevel:
+    if (separation_score < CONFIDENCE_THRESHOLDS[ConfidenceLevel.LOW]['separation_score'] or relative_rank > CONFIDENCE_THRESHOLDS[ConfidenceLevel.LOW]['relative_rank']):
+        return ConfidenceLevel.LOW
+    if (separation_score > CONFIDENCE_THRESHOLDS[ConfidenceLevel.HIGH]['separation_score'] and relative_rank < CONFIDENCE_THRESHOLDS[ConfidenceLevel.HIGH]['relative_rank']):
+        return ConfidenceLevel.HIGH
+    return ConfidenceLevel.MEDIUM
+
+def get_confidence(chi_squared_totals: list[float]):
+    sorted_values = sorted(chi_squared_totals)
+    lowest_value = sorted_values[0] # lowest value is best match, in context of chi-squared stats
+    second_lowest_value = sorted_values[1]
+
+    mean = round(statistics.mean(sorted_values[1:]))
+    standard_deviation = round(statistics.stdev(sorted_values[1:]))
+
+    relative_rank = lowest_value / mean
+    separation_score = (second_lowest_value - lowest_value) / standard_deviation
+
+    return { 'separation_score': separation_score, 'relative_rank': relative_rank }
+
 
 def calculate_confidence(solutionsWithTotals: list[SolutionWithTotal]):
     chi_squared_values = [s['chi_squared_total'] for s in solutionsWithTotals]

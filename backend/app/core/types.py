@@ -8,6 +8,11 @@ class StatName(str, Enum):
     # TRIGRAM = 'trigram'
     # QUADGRAM = 'quadgram'
 
+class ConfidenceLevel(str, Enum):
+    LOW = 'low'
+    MEDIUM = 'medium'
+    HIGH = 'high'
+
 class ErrorDetail(BaseModel):
     code: str
     message: str
@@ -41,7 +46,7 @@ class TransformCase(str, Enum):
     KEEP_CASE = "keep_case"
 
 class EncryptionRequest(BaseModel):
-    text: str = Field(..., max_length=5000, description="Text to be encrypted / decrypted")
+    text: str = Field(..., max_length=10000, description="Text to be encrypted / decrypted")
     key: Optional[int] = Field(None, description="Shift key for encryption / decryption")
     keep_spaces: Optional[bool] = Field(default=True, description='')
     keep_punctuation: Optional[bool] = Field(default=True, description='')
