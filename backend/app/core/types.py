@@ -13,6 +13,11 @@ class ConfidenceLevel(str, Enum):
     MEDIUM = 'medium'
     HIGH = 'high'
 
+class ConfidenceThreshold(BaseModel):
+    z_statistic: float
+    separation_score: float
+    relative_rank: float
+
 class ErrorDetail(BaseModel):
     code: str
     message: str

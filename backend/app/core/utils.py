@@ -1,7 +1,7 @@
 from typing import Literal
 import json
 from .errors import InvalidKeyError
-from .types import StatName, ConfidenceLevel
+from .types import StatName, ConfidenceLevel, ConfidenceThreshold
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -10,9 +10,17 @@ MIN_BIGRAM_TEXT_LENGTH = 200
 SAMPLE_LENGTH = 2000
 DECIMAL_PLACES = 5
 
-CONFIDENCE_THRESHOLDS = {
-    ConfidenceLevel.LOW: {'separation_score': 1.0, 'relative_rank': 0.8},
-    ConfidenceLevel.HIGH: {'separation_score': 2.0, 'relative_rank': 0.5}
+CONFIDENCE_THRESHOLDS: dict[ConfidenceLevel, ConfidenceThreshold] = {
+    ConfidenceLevel.LOW: ConfidenceThreshold(
+        z_statistic=1.5,
+        separation_score=1.0,
+        relative_rank=0.5
+    ),
+    ConfidenceLevel.HIGH: ConfidenceThreshold(
+        z_statistic=3.0,
+        separation_score=2.0,
+        relative_rank=0.2,
+    )
 }
 
 def load_json_file(filepath):
