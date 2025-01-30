@@ -75,8 +75,14 @@ def test_hack_cipher(test_client, test_params):
     assert response.status_code == 200
     assert response.json['success'] == True
     
+    metadata = response.json['metadata']
     solutions = response.json['data']
     
+    # Verify metadata
+    assert metadata['confidence_level'] in ['low', 'medium', 'high']
+    assert isinstance(metadata['analysis_length'], int)
+    assert metadata['analysis_length'] > 0
+
     # Verify solutions are ordered by chi_squared_total
     chi_squared_values = [solution['chi_squared_total'] for solution in solutions]
     assert chi_squared_values == sorted(chi_squared_values)
