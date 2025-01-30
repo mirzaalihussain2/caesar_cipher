@@ -1,5 +1,12 @@
 from flask import Flask
 from config import Config
+import logging
+
+# Removes "ERROR:root:" from the start of each error log
+logging.basicConfig(
+    format='%(message)s',
+    level=logging.INFO
+)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
