@@ -1,5 +1,5 @@
-from .utils import get_observed_frequencies, get_ngram_weight, DECIMAL_PLACES
-from .types import Solution, StatName, SolutionWithTotal
+from app.common.utils import get_observed_frequencies, get_ngram_weight, DECIMAL_PLACES
+from app.common.types import Solution, StatName, SolutionWithTotal
 
 def run_chi_squared_test(
     text: str,

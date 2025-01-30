@@ -1,25 +1,25 @@
-from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, MIN_BIGRAM_TEXT_LENGTH, ConfidenceLevel, ANALYSIS_LENGTHS, DECIMAL_PLACES
-from .types import Solution, StatName, HackResult, SolutionWithTotal
+from app.common.utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, MIN_BIGRAM_TEXT_LENGTH, ConfidenceLevel, ANALYSIS_LENGTHS, DECIMAL_PLACES
+from app.common.types import Solution, StatName, HackResult, SolutionWithTotal
 from .chi_squared import calculate_chi_squared_total, run_chi_squared_test, normalise_chi_squared_stats
 from .confidence import set_confidence
-from .encryption import encrypt_text
+from app.encryption.encrypt_cipher import encrypt_text
 
-def crack_cipher(ciphertext: str) -> HackResult:
+def hack_cipher(ciphertext: str) -> HackResult:
     """
     Main function to run frequency analysis on ciphertext samples of increasingly length
     until confident our solution is correct or full text analysed
     """
     full_text_length = len(ciphertext)
     analysis_lengths = ANALYSIS_LENGTHS.copy()
-    result = try_crack(ciphertext, full_text_length, analysis_lengths)
+    result = try_hack(ciphertext, full_text_length, analysis_lengths)
 
     while retry_analysis(result.confidence_level, result.analysis_length, full_text_length):
         analysis_lengths.pop(0)
-        result = try_crack(ciphertext, full_text_length, analysis_lengths)
+        result = try_hack(ciphertext, full_text_length, analysis_lengths)
     
     return result
 
-def try_crack(ciphertext: str, full_text_length: int, analysis_lengths: list[int]) -> HackResult:
+def try_hack(ciphertext: str, full_text_length: int, analysis_lengths: list[int]) -> HackResult:
     analysis_length = get_analysis_length(full_text_length, analysis_lengths)
     solutions = run_frequency_analysis(ciphertext, analysis_length)
     confidence_level = set_confidence(solutions)

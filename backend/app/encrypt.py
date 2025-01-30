@@ -4,10 +4,10 @@ import random
 from http import HTTPStatus
 import logging
 import inspect
-from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail
-from app.core.utils import normalize_key
-from app.core.errors import InvalidKeyError
-from app.core.encryption import encrypt_text, transform_text
+from app.common.types import EncryptionRequest, ApiResponse, ErrorDetail
+from app.common.utils import normalize_key
+from app.common.errors import InvalidKeyError
+from app.encryption.encrypt_cipher import encrypt_text, transform_text
 
 bp = Blueprint('encrypt', __name__)
 

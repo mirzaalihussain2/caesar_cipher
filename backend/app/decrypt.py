@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
-from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
-from app.core.utils import normalize_key
-from app.core.errors import InvalidKeyError, error_logger
-from app.core.encryption import encrypt_text, transform_text
-from app.core.cracking import crack_cipher
+from app.common.types import EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
+from app.common.utils import normalize_key
+from app.common.errors import InvalidKeyError, error_logger
+from app.encryption.encrypt_cipher import encrypt_text, transform_text
+from app.hacking.hack_cipher import hack_cipher
 import uuid
 
 bp = Blueprint('decrypt', __name__)
@@ -16,7 +16,7 @@ def decrypt():
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
             # if key not provided, hack the ciphertext
-            hack_result = crack_cipher(data.text)
+            hack_result = hack_cipher(data.text)
             transformed_solutions: list[ApiSolution] = [{
                 'key': s.key, 
                 'text': transform_text(s.full_text, data.keep_spaces, data.keep_punctuation, data.transform_case),

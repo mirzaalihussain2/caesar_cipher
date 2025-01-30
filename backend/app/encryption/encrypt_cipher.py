@@ -1,5 +1,5 @@
-from .utils import unigram_frequencies
-from .types import TransformCase
+from app.common.utils import unigram_frequencies
+from app.common.types import TransformCase
 
 def encrypt_text(original_text: str, key: int) -> str:
     encrypted_text = ""

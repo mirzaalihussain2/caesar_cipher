@@ -1,5 +1,5 @@
-from .utils import CONFIDENCE_THRESHOLDS
-from .types import SolutionWithTotal, ConfidenceLevel, ConfidenceThreshold
+from app.common.utils import CONFIDENCE_THRESHOLDS
+from app.common.types import SolutionWithTotal, ConfidenceLevel, ConfidenceThreshold
 import statistics
 
 def set_confidence(solutions: list[SolutionWithTotal]) -> ConfidenceLevel:

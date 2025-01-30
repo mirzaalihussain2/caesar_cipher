@@ -1,5 +1,5 @@
 import pytest
-from app.core.types import TransformCase
+from app.common.types import TransformCase
 
 test_cases = [
     # key=5 permutations
