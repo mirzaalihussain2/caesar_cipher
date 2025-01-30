@@ -17,7 +17,6 @@ def decrypt():
         if data.key is None:
             # if key not provided, hack the ciphertext
             hack_result = crack_cipher(data.text)
-            # solutions: list[ApiSolution] = [{'key': s.key, 'text': s.full_text, 'chi_squared_total': s.chi_squared_total} for s in hack_result.solutions]
             transformed_solutions: list[ApiSolution] = [{
                 'key': s.key, 
                 'text': transform_text(s.full_text, data.keep_spaces, data.keep_punctuation, data.transform_case),
