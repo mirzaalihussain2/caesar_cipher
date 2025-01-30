@@ -1,35 +1,7 @@
-from .utils import count_alpha_characters, unigram_frequencies, bigram_frequencies, MIN_BIGRAM_TEXT_LENGTH, DECIMAL_PLACES
+from .utils import DECIMAL_PLACES
 from .encryption import encrypt_text
-from .types import Solution, SolutionWithTotal, StatName
-from .statistics import run_chi_squared_test, normalise_chi_squared_stats, calculate_chi_squared_total, calculate_confidence
-
-def hack_cipher(ciphertext: str) -> list[SolutionWithTotal]:
-    """
-    Hacks simple Caesar cipher using frequency analysis (in English).
-    Uses chi-squared test to compare text frequencies with English language frequencies.
-    Returns possible solutions sorted by likelihood (lowest chi-squared value = best match).
-    """
-    text_length = count_alpha_characters(ciphertext)
-    solutions = generate_base_solutions(ciphertext)
-
-    solutions = add_solution_statistics(
-        solutions=solutions,
-        ngram_size=1,
-        ngram_expected_frequencies=unigram_frequencies(),
-        stat_name=StatName.UNIGRAM
-    )
-
-    if text_length > MIN_BIGRAM_TEXT_LENGTH:
-        solutions = add_solution_statistics(
-            solutions=solutions,
-            ngram_size=2,
-            ngram_expected_frequencies=bigram_frequencies(),
-            stat_name=StatName.BIGRAM
-        )
-    
-    solutionsWithTotals = calculate_chi_squared_total(solutions, text_length)
-    calculate_confidence(solutionsWithTotals)
-    return sorted(solutionsWithTotals, key=lambda x: x['chi_squared_total'])
+from .types import Solution, StatName
+from .chi_squared import run_chi_squared_test, normalise_chi_squared_stats
 
 def add_solution_statistics(
         solutions: list[Solution],
@@ -48,13 +20,14 @@ def add_solution_statistics(
     normalised_solutions = normalise_chi_squared_stats(solutions, stat_name)
     return normalised_solutions
 
-def generate_base_solutions(ciphertext: str) -> list[Solution]:
+def generate_base_solutions(ciphertext: str, analysis_length: int) -> list[Solution]:
     solutions = []
 
     for key in range(1, 26):
         solution = {
             'key': key,
-            'text': encrypt_text(ciphertext, key),
+            'full_text': encrypt_text(ciphertext, key),
+            'text': encrypt_text(ciphertext[:analysis_length], key),
             'chi_squared_stats': {},
             'normalised_chi_squared_stats': {}
         }

@@ -21,11 +21,13 @@ class ConfidenceThreshold(BaseModel):
 class ErrorDetail(BaseModel):
     code: str
     message: str
+    error_id: str
 
 class ApiResponse(BaseModel):
     success: bool
     data: Optional[list[dict]] = None
     error: Optional[ErrorDetail] = None
+    metadata: Optional[dict] = None
 
 class Solution(BaseModel):
     """
@@ -33,6 +35,7 @@ class Solution(BaseModel):
     Lower chi_squared_total suggests better match to English language patterns.
     """
     key: int
+    full_text: str
     text: str
     chi_squared_stats: dict[StatName, float]
     normalised_chi_squared_stats: dict[StatName, float]
@@ -49,6 +52,11 @@ class TransformCase(str, Enum):
     LOWERCASE = "lowercase"
     UPPERCASE = "uppercase"
     KEEP_CASE = "keep_case"
+
+class HackResult(BaseModel):
+    solutions: list[SolutionWithTotal]
+    confidence_level: ConfidenceLevel | None
+    analysis_length: int | None
 
 class EncryptionRequest(BaseModel):
     text: str = Field(..., max_length=10000, description="Text to be encrypted / decrypted")

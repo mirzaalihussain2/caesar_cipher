@@ -7,8 +7,8 @@ import os
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(CURRENT_DIR, '..', 'data')
 MIN_BIGRAM_TEXT_LENGTH = 200
-SAMPLE_LENGTH = 2000
 DECIMAL_PLACES = 5
+ANALYSIS_LENGTHS = [2000, 5000, 8000]
 
 CONFIDENCE_THRESHOLDS: dict[ConfidenceLevel, ConfidenceThreshold] = {
     ConfidenceLevel.LOW: ConfidenceThreshold(

@@ -59,5 +59,5 @@ def test_encryption_permutations(test_client, test_params):
     response = test_client.post('/encrypt', json=payload)
     assert response.status_code == 200
     assert response.json['success'] == True
-    assert response.json['data'][0]['key'] == test_params["key"]
+    assert response.json['metadata']['key'] == test_params["key"]
     assert response.json['data'][0]['text'] == test_params["expected"]

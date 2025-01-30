@@ -1,13 +1,12 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
-import inspect
-import logging
 from app.core.types import EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
 from app.core.utils import normalize_key
-from app.core.errors import InvalidKeyError
+from app.core.errors import InvalidKeyError, error_logger
 from app.core.encryption import encrypt_text, transform_text
-from app.core.hacking import hack_cipher
+from app.core.cracking import crack_cipher
+import uuid
 
 bp = Blueprint('decrypt', __name__)
 
@@ -17,12 +16,21 @@ def decrypt():
         data = EncryptionRequest(**request.get_json())
         if data.key is None:
             # if key not provided, hack the ciphertext
-            solutions: list[ApiSolution] = [{'key': s['key'], 'text': s['text'], 'chi_squared_total': s['chi_squared_total']} for s in hack_cipher(data.text)]
-            transformed_solutions: list[ApiSolution] = [{'key': s['key'], 'text': transform_text(s['text'], data.keep_spaces, data.keep_punctuation, data.transform_case), 'chi_squared_total': s['chi_squared_total']} for s in solutions]
+            hack_result = crack_cipher(data.text)
+            # solutions: list[ApiSolution] = [{'key': s.key, 'text': s.full_text, 'chi_squared_total': s.chi_squared_total} for s in hack_result.solutions]
+            transformed_solutions: list[ApiSolution] = [{
+                'key': s.key, 
+                'text': transform_text(s.full_text, data.keep_spaces, data.keep_punctuation, data.transform_case),
+                'chi_squared_total': s.chi_squared_total
+            } for s in hack_result.solutions]
 
             response = ApiResponse(
                 success=True,
-                data=transformed_solutions
+                data=transformed_solutions,
+                metadata={
+                    'confidence_level': hack_result.confidence_level,
+                    'analysis_length': hack_result.analysis_length
+                }
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
@@ -35,9 +43,11 @@ def decrypt():
             response = ApiResponse(
                 success=True,
                 data=[{
-                    'text': transformed_text,
+                    'text': transformed_text
+                }],
+                metadata={
                     'key': normalized_key
-                }]
+                }
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
     
@@ -62,15 +72,15 @@ def decrypt():
         return jsonify(response.model_dump()), HTTPStatus.UNPROCESSABLE_ENTITY
     
     except Exception as error:
-        function_name = inspect.currentframe().f_code.co_name
-        logging.error(f'Unexpected error in {function_name} function: {str(error)}')
+        error_id = str(uuid.uuid4())
+        error_logger(error, error_id)
 
         response = ApiResponse(
             success=False,
             error=ErrorDetail(
                 code="INTERNAL_ERROR",
-                message="An unexpected error occurred"
-
+                message="An unexpected error occurred",
+                error_id=error_id
             )
         )
         return jsonify(response.model_dump()), HTTPStatus.INTERNAL_SERVER_ERROR
