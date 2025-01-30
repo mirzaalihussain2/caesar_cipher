@@ -38,14 +38,6 @@ test_cases: list[HackingTestCase] = [
         "encryption_key": 11
     },
     {
-        "plaintext": "The journey of a thousand miles begins with a single step. Keep moving forward, no matter how small the progress may seem. Even the tiniest effort can lead to significant change over time. In the digital age, protecting sensitive data has become more critical than ever. Encrypting messages is a simple but effective way to ensure information remains secure. A curious mind is a treasure trove of endless possibilities. Never stop questioning, learning, and exploring the unknown, for each discovery brings new opportunities for growth. From the crackling of the campfire to the whispers of the wind through the trees, nature tells stories that remind us of our connection to the earth and each other. Great ideas are like seeds planted in fertile soil. With patience, care, and the right environment, they can grow into something extraordinary, changing the world in ways we never imagined.",
-        "ciphertext": "Gur wbhearl bs n gubhfnaq zvyrf ortvaf jvgu n fvatyr fgrc. Xrrc zbivat sbejneq, ab znggre ubj fznyy gur cebterff znl frrz. Rira gur gvavrfg rssbeg pna yrnq gb fvtavsvpnag punatr bire gvzr. Va gur qvtvgny ntr, cebgrpgvat frafvgvir qngn unf orpbzr zber pevgvpny guna rire. Rapelcgvat zrffntrf vf n fvzcyr ohg rssrpgvir jnl gb rafher vasbezngvba erznvaf frpher. N phevbhf zvaq vf n gernfher gebir bs raqyrff cbffvovyvgvrf. Arire fgbc dhrfgvbavat, yrneavat, naq rkcybevat gur haxabja, sbe rnpu qvfpbirel oevatf arj bccbeghavgvrf sbe tebjgu. Sebz gur penpxyvat bs gur pnzcsver gb gur juvfcref bs gur jvaq guebhtu gur gerrf, angher gryyf fgbevrf gung erzvaq hf bs bhe pbaarpgvba gb gur rnegu naq rnpu bgure. Terng vqrnf ner yvxr frrqf cynagrq va sregvyr fbvy. Jvgu cngvrapr, pner, naq gur evtug raivebazrag, gurl pna tebj vagb fbzrguvat rkgenbeqvanel, punatvat gur jbeyq va jnlf jr arire vzntvarq.",
-        "encryption_key": 13
-    }
-]
-
-old_test_cases: list[HackingTestCase] = [
-    {
         "plaintext": "The journey of a thousand miles begins with a single step. Keep moving forward, no matter how small the progress may seem. Even the tiniest effort can lead to significant change over time.",
         "ciphertext": "Gur wbhearl bs n gubhfnaq zvyrf ortvaf jvgu n fvatyr fgrc. Xrrc zbivat sbejneq, ab znggre ubj fznyy gur cebterff znl frrz. Rira gur gvavrfg rssbeg pna yrnq gb fvtavsvpnag punatr bire gvzr.",
         "encryption_key": 13
