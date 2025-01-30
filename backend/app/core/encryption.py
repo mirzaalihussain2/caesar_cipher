@@ -1,7 +1,7 @@
 from .utils import unigram_frequencies
 from .types import TransformCase
 
-def encrypt_text(original_text: str, key: int):
+def encrypt_text(original_text: str, key: int) -> str:
     encrypted_text = ""
     alphabet = sorted(unigram_frequencies().keys())
 
@@ -16,7 +16,7 @@ def encrypt_text(original_text: str, key: int):
     
     return encrypted_text
 
-def transform_text(text: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase):
+def transform_text(text: str, keep_spaces: bool, keep_punctation: bool, transform_case: TransformCase) -> str:
     if transform_case == TransformCase.LOWERCASE:
         text = text.lower()
     elif transform_case == TransformCase.UPPERCASE:
