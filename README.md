@@ -1,6 +1,8 @@
-Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacOS, Linux).
+# Overview
+This is a basic app that encrypts, decrypts and hacks Caesar ciphers. It uses frequency analysis: comparing frequencies of letters and bigrams in the ciphertext to frequencies in normal English language.
 
 # Technologies Used
+Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacOS, Linux).
 
 ### Frontend
 
@@ -9,6 +11,7 @@ Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacO
 - Flask
 - Pydantic
 - pytest
+- Python's statistics module
 - JSON files
 <br><br>
 
@@ -18,14 +21,16 @@ This API serves only two routes:
 - `/encrypt`
 - `/decrypt`
 
-A 'Hello, World!' smoke test is served on `/` route
+For understanding the app structure, begin with the [@encrypt.py](backend/app/encrypt.py) and [@decrypt.py](backend/app/decrypt.py) files that correspond to these routes.
+
+A 'Hello, World!' smoke test is served on `/` route.
 
 ## Request & response parameters
 All requests are `POST` requests and must include the header `Content-Type: application/json`. All routes take the same parameters:
 
 | **parameter** | **required?** | **type** | **default value** | **description** | **details** |
 |---------------|---------------|----------|-------------------|-----------------|-------------|
-| `text` | required | `string` | | text to be encrypted, decrypted or hacked | max 5000 chars
+| `text` | required | `string` | | text to be encrypted, decrypted or hacked | max 10,000 chars
 | `key` | optional | `integer` | | key for encrypting / decrypting text |
 | `keep_spaces` | optional | `boolean` | `True` | whether to keep whitepsace in return string |
 | `keep_punctuation` | optional | `boolean` | `True` | whether to keep punctuation in return string |
@@ -38,7 +43,7 @@ All API responses have the following shape:
     "data": [
         {
             "text": string,
-            // hacking operation also returns key and chi_squared value
+            // ...
         }
         // ... array may contain many elements
     ] | null,
@@ -48,7 +53,7 @@ All API responses have the following shape:
     } | null,
     "metadata": {
         "key": integer
-        // hacking operation also returns confidence_level and analysis_length
+        // ...
     } | null
 }
 ```
