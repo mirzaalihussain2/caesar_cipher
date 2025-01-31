@@ -27,6 +27,7 @@ def decrypt():
                 success=True,
                 data=transformed_solutions,
                 metadata={
+                    'key': transformed_solutions[0]['key'],
                     'confidence_level': hack_result.confidence_level,
                     'analysis_length': hack_result.analysis_length
                 }

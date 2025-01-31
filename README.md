@@ -38,15 +38,17 @@ All API responses have the following shape:
     "data": [
         {
             "text": string,
-            "key": integer
-            // depending on operation,
-            // dictionary may contain other key-value pairs
+            // hacking operation also returns key and chi_squared value
         }
         // ... array may contain many elements
     ] | null,
     "error": {
         "code": string,
         "message": string
+    } | null,
+    "metadata": {
+        "key": integer
+        // hacking operation also returns confidence_level and analysis_length
     } | null
 }
 ```
@@ -78,12 +80,14 @@ This API performs 3 functions: encrypt, decrypt, hack.
 {
     "data": [
         {
-            "key": 9,
             "text": "Qnuux Fxaum"
         }
     ],
     "error": null,
-    "success": true
+    "success": true,
+    "metadata": {
+        "key": 9
+    }
 }
 ```
 
@@ -109,12 +113,14 @@ This API performs 3 functions: encrypt, decrypt, hack.
 {
     "data": [
         {
-            "key": 17,
             "text": "hello world"
         }
     ],
     "error": null,
-    "success": true
+    "success": true,
+    "metadata": {
+        "key": 17
+    }
 }
 ```
 
@@ -123,6 +129,7 @@ This API performs 3 functions: encrypt, decrypt, hack.
 - If `key` is NOT provided to `/decrypt` route, then ciphertext will be hacked using frequency analysis.
 - A list of possible plaintext solutions will be returned by the API, ordered by best matches first.
 - Frequency analysis is best at hacking ciphers longer than 100 characters.
+- For ciphertexts longer than 2000 characters, analysis is run on the first 2000 characters and then repeated on ciphertexts of increasing length until the full ciphertext is used or we have high confidence decryption was successful.
 
 #### Example POST request
 
@@ -137,34 +144,39 @@ This API performs 3 functions: encrypt, decrypt, hack.
 {
     "data": [
         {
-            "chi_squared_total": 1063.8706,
+            "chi_squared_total": 27.43352,
             "key": 17,
             "text": "I'm having a great time encrypting and decrypting Caesar ciphers with this API. I wonder how I can build upon it myself."
         },
         {
-            "chi_squared_total": 11957.0633,
+            "chi_squared_total": 311.42947,
             "key": 2,
             "text": "T'x slgtyr l rcple etxp pyncjaetyr lyo opncjaetyr Nlpdlc ntaspcd htes estd LAT. T hzyopc szh T nly mftwo fazy te xjdpwq."
         },
         {
-            "chi_squared_total": 18062.1299,
+            "chi_squared_total": 366.69404,
             "key": 15,
             "text": "G'k fytgle y epcyr rgkc clapwnrgle ylb bcapwnrgle Aycqyp agnfcpq ugrf rfgq YNG. G umlbcp fmu G ayl zsgjb snml gr kwqcjd."
         },
         {
-            "chi_squared_total": 18557.1665,
+            "chi_squared_total": 465.21693,
             "key": 5,
             "text": "W'a vojwbu o ufsoh hwas sbqfmdhwbu obr rsqfmdhwbu Qosgof qwdvsfg kwhv hvwg ODW. W kcbrsf vck W qob piwzr idcb wh amgszt."
         },
         {
-            "chi_squared_total": 20707.5345,
-            "key": 24,
-            "text": "P't ohcpun h nylha aptl lujyfwapun huk kljyfwapun Jhlzhy jpwolyz dpao aopz HWP. P dvukly ovd P jhu ibpsk bwvu pa tfzlsm."
-        }
+            "chi_squared_total": 502.72844,
+            "key": 19,
+            "text": "K'o jcxkpi c itgcv vkog gpetarvkpi cpf fgetarvkpi Ecguct ekrjgtu ykvj vjku CRK. K yqpfgt jqy K ecp dwknf wrqp kv oaugnh."
+        },
         // ... 20 more solutions (omitted for brevity)
     ],
     "error": null,
-    "success": true
+    "success": true,
+    "metadata": {
+        "analysis_length": 120,
+        "confidence_level": "low",
+        "key": 17 // key of best match
+    },
 }
 ```
 
@@ -200,20 +212,61 @@ From the backend folder, there are 4 ways to run the backend:
 Backend served at [http://localhost:8080](http://localhost:8080) - only route available is 'Hello, World!' smoke test on index route (`/`).
 <br><br>
 
+# Testing
+There is a simple suite of API integration tests that test each operation (encryption, decryption, and hacking) end-to-end with various permutations. If any of the specific functions required for these 3 broader operations start to fail, these failure should be reflected in the API tests.
+
+- **Encryption Tests**: Tests encrypting the same 'Hello, World!' text with 3 different keys and all permutations of `keep_spaces`, `keep_punctuation` and `transform_case`.
+- **Decryption Tests**: Tests decrypting 'Hello, World!' ciphertext, encrypted with 3 different keys and all permutations of `keep_spaces`, `keep_punctuation` and `transform_case`.
+- **Hacking Tests**: Tests hacking 12 ciphertexts (5 ciphertexts < 200 characters, 6 ciphertexts 2000 - 4000 characters, 1 ciphertext > 9000 characters). Checks that metadata includes a confidence level (high, medium, low) and the length of analysed text
+- **Basic Smoke Test**: Verifies API is running & responding.
+
+All tests interact with the API througuh HTTP requests.
+
+## Running tests
+1. Set up backend following ([setup](#setup)) instructions above.
+2. Once in `backend` folder, execute `./test.sh` from Terminal
+
+    | **testing mode** |  **command** |
+    |------------------|--------------|
+    | running tests normally |  `./test.sh` |
+    | running tests with coverage report |  `./test.sh coverage` |
+    | running tests with detailed output |  `./test.sh verbose` |
+<br>
 
 
 
-# TESTING
-- Tests for all 3 operations: encryption, decryption and hacking. Encryption & decryption also include lots of variations of transforming the text (e.g. keeping or removing spaces, keeping or removing space, keeping or changing the case).
-- Didn't do unit tests for specific functions, as all those functions are required to work for the API tests to work. So if specific functions fail, this'll be reflected in API tests failing for our routes.
 
 # caesar_cipher
 Caesar cipher encrypter and decrypter. Decrypter uses letter frequencies in English language to suggest decrypted text.
 
+deployed to railway - need to write about how to deploy?
+
 ## TO DO
-- Deploy
 - Write READ.ME explaining the two routes, 3 operations (encrypt, decrypt, hack)
 - Add to READ.ME explaining running & deploying backend
 - imoplement frontend
 
-- for longer strings, a strategy would be to calculate key on a substring and then apply that key to rest of string - for a 5000 char string, find correct key on 1000 char string and then apply to rest of string
+
+- testing API locally without POSTMAN (or explain both, POSTMAN & CURL)
+
+tests for errors:
+    - on encrypt / decrypt
+        - TEXT: text > 5000 characters --> VALIDATION ERROR
+        - TEXT: text missing, only key provided
+        - KEY: providing a key that's a float --> VALIDATION ERROR
+        - KEY: invalid key error, when 0
+        - KEY: invalid key error, when 26
+        - keep_spaces: provide string, validation error
+        - keep_punctuation: provide int, validation error
+        - transform_case: "UPPERCASE"
+
+    - on hacking test
+        - Empty 'text' string, code: VALIDATION_ERROR
+
+- add 'confidence_score' for longer strings (e.g. 1000 chars or more, maybe 2000 chars or more)
+
+
+- add a section explain confidence intervals
+maybe include this in file actually, rather than here?
+    # separation_score is a Z-statistic adapted for frequency analysis whwere chi-squared stats are NOT expected to be normally distributed,
+    # separation_score compares lowest value against second lowest value rather than mean

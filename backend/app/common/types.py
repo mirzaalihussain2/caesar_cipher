@@ -21,7 +21,7 @@ class ConfidenceThreshold(BaseModel):
 class ErrorDetail(BaseModel):
     code: str
     message: str
-    error_id: str
+    error_id: Optional[str] = None
 
 class ApiResponse(BaseModel):
     success: bool

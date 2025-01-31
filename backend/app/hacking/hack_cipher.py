@@ -93,7 +93,7 @@ def add_solution_statistics(
 def generate_base_solutions(ciphertext: str, analysis_length: int) -> list[Solution]:
     solutions = []
 
-    for key in range(1, 26):
+    for key in range(26):
         solution = {
             'key': key,
             'full_text': encrypt_text(ciphertext, key),
