@@ -76,7 +76,7 @@ This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
 - If `key` is not provided to `/encrypt` route, a random key is generated and used.
 - If `key` provided is 0 or a multiple of 26, API will raise an invalid key error.
 
-#### Example POST request
+#### Example POST request (using Postman)
 ```JSON
 {
     "text": "Hello, World!",
@@ -84,6 +84,19 @@ This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
     "keep_punctuation": false,
     "transform_case": "keep_case"
 }
+```
+
+#### Example POST request (using cURL)
+```bash
+curl -X POST http://localhost:8080/encrypt \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, World!",
+    "key": 9,
+    "keep_punctuation": false,
+    "transform_case": "keep_case"
+  }'
+
 ```
 
 #### Example API response
@@ -108,8 +121,7 @@ This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
 - The `key` in the API response is the decryption key (`encryption key` + `decryption key` = 26).
 - Like `/encrypt` route above, if `key` provided is 0 or a multiple of 26, API will raise an invalid key error.
 
-
-#### Example POST request
+#### Example POST request (using Postman)
 ```JSON
 {
     "text": "Qnuux Fxaum",
@@ -117,6 +129,18 @@ This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
     "keep_spaces": true,
     "transform_case": "lowercase"
 }
+```
+
+#### Example POST request (using cURL)
+```bash
+curl -X POST http://localhost:8080/decrypt \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Qnuux Fxaum",
+    "key": 9,
+    "keep_spaces": true,
+    "transform_case": "lowercase"
+  }'
 ```
 
 #### Example API response
@@ -142,12 +166,20 @@ This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
 - Frequency analysis is best at hacking ciphers longer than 100 characters.
 - For ciphertexts longer than 2000 characters, analysis is run on the first 2000 characters and then repeated on ciphertexts of increasing length until the full ciphertext is used or we have high confidence decryption was successful.
 
-#### Example POST request
-
+#### Example POST request (using Postman)
 ```JSON
 {
-    "text": "R'v qjerwp j panjc crvn nwlahycrwp jwm mnlahycrwp Ljnbja lryqnab frcq cqrb JYR. R fxwmna qxf R ljw kdrum dyxw rc vhbnuo.",
+    "text": "R'v qjerwp j panjc crvn nwlahycrwp jwm mnlahycrwp Ljnbja lryqnab frcq cqrb JYR. R fxwmna qxf R ljw kdrum dyxw rc vhbnuo."
 }
+```
+
+#### Example POST request (using cURL)
+```bash
+curl -X POST http://localhost:8080/decrypt \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "R'\''v qjerwp j panjc crvn nwlahycrwp jwm mnlahycrwp Ljnbja lryqnab frcq cqrb JYR. R fxwmna qxf R ljw kdrum dyxw rc vhbnuo."
+  }''
 ```
 
 #### Example API response
