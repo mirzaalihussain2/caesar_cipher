@@ -61,9 +61,9 @@ class HackResult(BaseModel):
 class EncryptionRequest(BaseModel):
     text: str = Field(..., max_length=10000, description="Text to be encrypted / decrypted")
     key: Optional[int] = Field(None, description="Shift key for encryption / decryption")
-    keep_spaces: Optional[bool] = Field(default=True, description='')
-    keep_punctuation: Optional[bool] = Field(default=True, description='')
-    transform_case: TransformCase = Field(default=TransformCase.KEEP_CASE, description='')
+    keep_spaces: Optional[bool] = Field(default=True, description='Keep whitespace in return text')
+    keep_punctuation: Optional[bool] = Field(default=True, description='Keep punctuation in return text')
+    transform_case: TransformCase = Field(default=TransformCase.KEEP_CASE, description='Transform or maintain case in return text')
 
     @field_validator('text')
     @classmethod
