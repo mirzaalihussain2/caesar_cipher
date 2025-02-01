@@ -1,12 +1,13 @@
 # Overview
 This is a basic app that encrypts, decrypts and hacks Caesar ciphers. It uses frequency analysis: comparing frequencies of letters and bigrams in the ciphertext to frequencies in normal English language.
+<br><br>
 
 # Technologies Used
 Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacOS, Linux).
 
-### Frontend
+## Frontend
 
-### Backend
+## Backend
 - Python 3.11
 - Flask
 - Pydantic
@@ -16,14 +17,18 @@ Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacO
 <br><br>
 
 # API information
+
 ## Routes
 This API serves only two routes:
 - `/encrypt`
 - `/decrypt`
 
 For understanding the app structure, begin with the [@encrypt.py](backend/app/encrypt.py) and [@decrypt.py](backend/app/decrypt.py) files that correspond to these routes.
+<br><br>
 
-A 'Hello, World!' smoke test is served on `/` route.
+#### Smoke test
+* 'Hello, World!' smoke test served on `/` route.
+<br><br>
 
 ## Request & response parameters
 All requests are `POST` requests and must include the header `Content-Type: application/json`. All routes take the same parameters:
@@ -61,9 +66,10 @@ All API responses have the following shape:
 ### Errors
 1. `VALIDATION_ERROR`: Invalid input for request parameter (e.g. passing string to `key` param)
 2. `INVALID_KEY`: Key is either 0 or 26, which will not encrypt / decrypt text.
+<br><br>
 
 ## Operations
-This API performs 3 functions: encrypt, decrypt, hack.
+This API performs 3 functions: **encrypt**, **decrypt**, **hack**.
 
 ### Encryption (`/encrypt` route)
 
@@ -184,8 +190,10 @@ This API performs 3 functions: encrypt, decrypt, hack.
     },
 }
 ```
+<br>
 
 # Running backend
+
 ## Setup
 1. Check you have Python 3.11 installed, a specific version number should be returned in the Terminal (e.g. `Python 3.11.11`).
     ```bash
@@ -208,7 +216,7 @@ The backend can be run:
 
 From the backend folder, there are 4 ways to run the backend:
 | **environment** | **mode** | **command** |
-|----------------|----------|--------------|
+|-----------------|----------|-------------|
 | virtual env | dev | `./boot.sh venv dev` |
 | virtual env | prod | `./boot.sh venv prod` |
 | docker | dev | `./boot.sh docker dev` |
@@ -238,3 +246,39 @@ All tests interact with the API througuh HTTP requests.
     | running tests with detailed output |  `./test.sh verbose` |
 <br>
 
+# Deployment
+## Requirements for running backend locally
+* The following files are used for running the backend locally using a virtual environment (in `dev` or `prod` modes):
+    * [boot.sh](/backend/boot.sh)
+    * [config.py](/backend/config.py)
+    * env files (`.env.local` / `.env.prod`)
+
+* The following files are used for running the backend locally using a docker container (in `dev` and `prod` modes):
+    * [config.py](/backend/config.py)
+    * env files (`.env.local`, `.env.prod`)
+    * docker compose files (dev: [docker-compose.yml](/backend/docker-compose.yml) / prod: [docker-compose.prod.yml](/backend/docker-compose.yml))
+    * dockerfile ([Dockerfile.dev](/backend/Dockerfile.dev) / [Dockerfile.prod](/backend/Dockerfile.prod))
+
+NOTE: [boot.sh](/backend/boot.sh) not required for running backend using docker, because we only use the `docker compose` commands at the very end of the file.
+<br><br>
+
+## Requirements for deployment
+Deployment information correct as of 31 Jan 2025.
+
+### Railway
+The backend can be deployed to [Railway](https://railway.com) with the following files:
+* [config.py](/backend/config.py)
+* dockerfile ([Dockerfile.prod](/backend/Dockerfile.prod))
+<br><br>
+
+NOTE:
+1. if pushing as a monorepo, set root directory to `/backend`
+2. if not automatically detected, set variable to `RAILWAY_DOCKERFILE_PATH` to `backend/Dockerfile.prod`
+3. set other variables from `.env.prod` file
+
+<br><br>
+
+
+## TO DO LIST
+- implement frontend
+- testing API locally without POSTMAN (or explain both, POSTMAN & CURL)
