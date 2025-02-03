@@ -314,3 +314,42 @@ NOTE:
 ## TO DO LIST
 - implement frontend
 - testing API locally without POSTMAN (or explain both, POSTMAN & CURL)
+
+## Requirements for front-end
+
+### INPUTS
+* "Input text"
+    * Text area box
+    * Validation
+        * max 10,000 characters
+* Encryption key
+    * Input box
+    * user can type an integer, alphabetic key strokes do nothing
+
+* Keep whitespace
+    * Switch slider
+    * Reads "keep whitespace" when off / default position
+    * Reads "remove whitespace" when on / changed from default
+
+* Keep punctuation
+    * Switch slider
+    * Reads "keep punctuation" when off / default position
+    * Reads "remove punctuation" when on / changed from default
+
+* Output case
+    * Select dropdown
+    * 3 options:
+        * keep original case (default)
+        * uppercase
+        * lowercase
+    * does this need title?
+
+### BUTTONS
+* 3 buttons:
+    * Encrypt (text area empty -> button disabled)
+    * Decrypt (button disabled if text area or key empty)
+    * Hack (button disabled if text area empty or key provided)
+* All buttons disabled (1) if text area empty, (2) if key = 0 or multple of 26
+
+# OUTPUTS
+    * Text
