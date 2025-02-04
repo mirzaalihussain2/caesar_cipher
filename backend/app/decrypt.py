@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
-from app.common.types import EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
+from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
 from app.common.utils import normalize_key
 from app.common.errors import InvalidKeyError, error_logger
 from app.encryption.encrypt_cipher import encrypt_text, transform_text
@@ -17,20 +17,20 @@ def decrypt():
         if data.key is None:
             # if key not provided, hack the ciphertext
             hack_result = hack_cipher(data.text)
-            transformed_solutions: list[ApiSolution] = [{
-                'key': s.key, 
-                'text': transform_text(s.full_text, data.keep_spaces, data.keep_punctuation, data.transform_case),
-                'chi_squared_total': s.chi_squared_total
-            } for s in hack_result.solutions]
+            transformed_solutions = [ApiSolution(
+                key=s.key,
+                text=transform_text(s.full_text, data.keep_spaces, data.keep_punctuation, data.transform_case),
+                chi_squared_total=s.chi_squared_total
+            ) for s in hack_result.solutions]
 
             response = ApiResponse(
                 success=True,
                 data=transformed_solutions,
-                metadata={
-                    'key': transformed_solutions[0]['key'],
-                    'confidence_level': hack_result.confidence_level,
-                    'analysis_length': hack_result.analysis_length
-                }
+                metadata=Metadata(
+                    key=transformed_solutions[0].key,
+                    confidence_level=hack_result.confidence_level,
+                    analysis_length=hack_result.analysis_length
+                )
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
         else:
@@ -42,12 +42,12 @@ def decrypt():
             
             response = ApiResponse(
                 success=True,
-                data=[{
-                    'text': transformed_text
-                }],
-                metadata={
-                    'key': normalized_key
-                }
+                data=[ApiText(
+                    text=transformed_text
+                )],
+                metadata=Metadata(
+                    key=normalized_key
+                )
             )
             return jsonify(response.model_dump()), HTTPStatus.OK
     

@@ -23,11 +23,10 @@ class ErrorDetail(BaseModel):
     message: str
     error_id: Optional[str] = None
 
-class ApiResponse(BaseModel):
-    success: bool
-    data: Optional[list[dict]] = None
-    error: Optional[ErrorDetail] = None
-    metadata: Optional[dict] = None
+class Metadata(BaseModel):
+    key: int
+    confidence_level: Optional[ConfidenceLevel] = None
+    analysis_length: Optional[int] = None
 
 class Solution(BaseModel):
     """
@@ -44,9 +43,20 @@ class SolutionWithTotal(Solution):
     """ Solution with calculated chi-squared total """
     chi_squared_total: float | None
 
-class ApiSolution(SolutionWithTotal):
+class ApiSolution(BaseModel):
     """ Solution formatted for API responses. """
-    model_config = ConfigDict(json_schema_extra={"exclude": ["chi_squared_stats", "normalised_chi_squared_stats"]})
+    key: int
+    text: str
+    chi_squared_total: float | None
+
+class ApiText(BaseModel):
+    text: str
+
+class ApiResponse(BaseModel):
+    success: bool
+    data: Optional[list[ApiSolution | ApiText]] = None
+    error: Optional[ErrorDetail] = None
+    metadata: Optional[Metadata] = None
 
 class TransformCase(str, Enum):
     LOWERCASE = "lowercase"

@@ -4,7 +4,7 @@ import random
 from http import HTTPStatus
 import logging
 import inspect
-from app.common.types import EncryptionRequest, ApiResponse, ErrorDetail
+from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail
 from app.common.utils import normalize_key
 from app.common.errors import InvalidKeyError
 from app.encryption.encrypt_cipher import encrypt_text, transform_text
@@ -22,12 +22,12 @@ def encrypt():
 
         response = ApiResponse(
             success=True,
-            data=[{
-                'text': transformed_text
-            }],
-            metadata={
-                'key': normalized_key
-            }
+            data=[ApiText(
+                text=transformed_text
+            )],
+            metadata=Metadata(
+                key=normalized_key
+            )
         )
         return jsonify(response.model_dump()), HTTPStatus.OK
 
