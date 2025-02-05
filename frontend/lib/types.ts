@@ -1,27 +1,29 @@
+import { z } from "zod";
+
 interface ApiRequest {
     text: string;
     key?: number;
-    keep_spaces?: boolean;
-    keep_punctuation?: boolean;
-    transform_case?: 'lowercase' | 'uppercase' | 'keep_case'
+    keepSpaces?: boolean;
+    keepPunctuation?: boolean;
+    transformCase?: 'lowercase' | 'uppercase' | 'keep_case';
 }
 
 interface ErrorDetail {
     code: string;
     message: string;
-    error_id?: string;
+    errorId?: string;
 }
 
 interface Metadata {
     key: number;
-    confidence_level?: 'low' | 'medium' | 'high';
-    analysis_length?: number;
+    confidenceLevel?: 'low' | 'medium' | 'high';
+    analysisLength?: number;
 }
 
 interface ApiSolution {
     key: number;
     text: string;
-    chi_squared_total?: number;
+    chiSquaredTotal?: number;
 }
 
 interface ApiText {
@@ -30,7 +32,7 @@ interface ApiText {
 
 interface ApiResponse {
     success: boolean;
-    data?: ApiSolution[] | ApiText[];
+    data?: (ApiSolution | ApiText)[];
     error?: ErrorDetail;
     metadata?: Metadata;
 }

@@ -155,7 +155,9 @@ export default function Home() {
             )}
           />
 
-          <Button type="submit">Submit</Button>
+          <Button type="submit">Encrypt</Button>
+          <Button type="submit">Decrypt</Button>
+          <Button type="submit">Hack</Button>
         </form>
       </Form>
     </main>
