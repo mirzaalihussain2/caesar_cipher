@@ -1,38 +1,43 @@
 import { z } from "zod";
 
-interface ApiRequest {
-    text: string;
-    key?: number;
-    keepSpaces?: boolean;
-    keepPunctuation?: boolean;
-    transformCase?: 'lowercase' | 'uppercase' | 'keep_case';
-}
+// Request Schemas
+export const ApiRequestSchema = z.object({
+    text: z.string().min(1).max(10000),
+    key: z.number().int().optional(),
+    keepSpaces: z.boolean().default(true),
+    keepPunctuation: z.boolean().default(true),
+    transformCase: z.enum(["lowercase", "uppercase", "keep_case"]).default("keep_case")
+})
 
-interface ErrorDetail {
-    code: string;
-    message: string;
-    errorId?: string;
-}
+// Response Schemas
+export const ErrorDetailSchema = z.object({
+    code: z.string(),
+    message: z.string(),
+    errorId: z.string().optional()
+});
+  
+export const MetadataSchema = z.object({
+    key: z.number(),
+    confidenceLevel: z.enum(["low", "medium", "high"]).optional(),
+    analysisLength: z.number().optional()
+});
 
-interface Metadata {
-    key: number;
-    confidenceLevel?: 'low' | 'medium' | 'high';
-    analysisLength?: number;
-}
+export const ApiSolutionSchema = z.object({
+    key: z.number(),
+    text: z.string(),
+    chiSquaredTotal: z.number().optional()
+})
 
-interface ApiSolution {
-    key: number;
-    text: string;
-    chiSquaredTotal?: number;
-}
+export const ApiTextSchema = z.object({
+    text: z.string()
+})
 
-interface ApiText {
-    text: string;
-}
-
-interface ApiResponse {
-    success: boolean;
-    data?: (ApiSolution | ApiText)[];
-    error?: ErrorDetail;
-    metadata?: Metadata;
-}
+export const ApiResponseSchema = z.object({
+    success: z.boolean(),
+    data: z.union([
+        z.array(ApiSolutionSchema),
+        z.array(ApiTextSchema)
+    ]).optional(),
+    error: ErrorDetailSchema.optional(),
+    metadata: MetadataSchema.optional()
+})
