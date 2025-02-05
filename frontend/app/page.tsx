@@ -20,39 +20,31 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { ApiRequest, ApiRequestSchema, Endpoint } from "@/lib/types";
+import { apiRequest } from "@/lib/api";
 
-const FormSchema = z.object({
+const FormSchema = ApiRequestSchema.extend({
   text: z
     .string()
-    .min(1, {
-      message: "Input text cannot be empty"
-    })
-    .max(10000, {
-      message: "Input text cannot exceed 10,000 characters"
-    }),
-  key: z.optional(z.number().int()),
-  keep_spaces: z.boolean(),
-  keep_punctuation: z.boolean(),
-  transform_case: z.enum(["keep_case", "lowercase", "uppercase"])
+    .min(1, { message: "Input text cannot be empty" })
+    .max(10000, { message: "Input text cannot exceed 10,000 characters" }),
+  key: z.optional(z.number().int({ message: "Key must be a whole number" }))
 })
 
 export default function Home() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues:{
-      keep_spaces: true,
-      keep_punctuation: true,
-      transform_case: 'keep_case'
-    }
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data, null, 2))
+  function onSubmit(endpoint: Endpoint, request: ApiRequest) {
+    const response = apiRequest(endpoint, request)    
+    console.log(JSON.stringify({endpoint, request}, null, 2))
+    
     return toast({
       title: "You submitted the following values:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          <code className="text-white">{JSON.stringify({endpoint, request}, null, 2)}</code>
         </pre>
       ),
     })
@@ -103,7 +95,7 @@ export default function Home() {
 
           <FormField
             control={form.control}
-            name="keep_spaces"
+            name="keepSpaces"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Keep spaces</FormLabel>
@@ -119,7 +111,7 @@ export default function Home() {
 
           <FormField
             control={form.control}
-            name="keep_punctuation"
+            name="keepPunctuation"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Keep punctuation</FormLabel>
@@ -135,7 +127,7 @@ export default function Home() {
 
           <FormField
             control={form.control}
-            name="transform_case"
+            name="transformCase"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Transform Case </FormLabel>
