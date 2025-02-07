@@ -20,31 +20,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ApiRequest, ApiRequestSchema, Endpoint } from "@/lib/types";
+import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData } from "@/lib/types";
 import { apiRequest } from "@/lib/api";
 
-const FormSchema = ApiRequestSchema.extend({
-  text: z
-    .string()
-    .min(1, { message: "Input text cannot be empty" })
-    .max(10000, { message: "Input text cannot exceed 10,000 characters" }),
-  key: z.optional(z.number().int({ message: "Key must be a whole number" }))
-})
 
 export default function Home() {
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
   })
 
-  function onSubmit(endpoint: Endpoint, request: ApiRequest) {
-    const response = apiRequest(endpoint, request)    
-    console.log(JSON.stringify({endpoint, request}, null, 2))
+  function onSubmit(formData: z.infer<typeof FormSchema>) {
+    const response = apiRequest(formData.action, formData)
     
     return toast({
       title: "You submitted the following values:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify({endpoint, request}, null, 2)}</code>
+          <code className="text-white">{JSON.stringify({formData}, null, 2)}</code>
         </pre>
       ),
     })

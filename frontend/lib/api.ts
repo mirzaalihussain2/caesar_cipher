@@ -1,21 +1,24 @@
 import { toCamelCase, toSnakeCase } from "./transform";
-import { ApiRequest, Endpoint, ApiResponse, ApiResponseSchema } from "./types";
+import { Action, ApiRequest, Endpoint, ApiResponse, ApiResponseSchema } from "./types";
 import { EndpointSchema, ApiRequestSchema } from "./types";
 
 const API_URL = new URL(process.env.NEXT_PUBLIC_API_URL as string);
 
-export async function apiRequest(endpoint: Endpoint, request: ApiRequest): Promise<ApiResponse> {
-    // Validate at runtime
-    const validEndpoint = EndpointSchema.parse(endpoint);
+export async function apiRequest(action: Action, request: ApiRequest): Promise<ApiResponse> {
+    const endpoint = EndpointSchema.parse(action);
     const validRequest = ApiRequestSchema.parse(request);
 
+    const cleanRequest = action === 'hack' 
+        ? { ...validRequest, key: undefined }
+        : validRequest;
+
     try {
-        const response = await fetch(`${API_URL}${validEndpoint}`, {
+        const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(toSnakeCase(validRequest)),
+            body: JSON.stringify(toSnakeCase(cleanRequest)),
             signal: AbortSignal.timeout(20000),
         })
 
