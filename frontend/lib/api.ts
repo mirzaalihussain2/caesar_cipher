@@ -13,6 +13,7 @@ export async function apiRequest(action: Action, request: ApiRequest): Promise<A
         : validRequest;
 
     try {
+        console.log("API has been called!")
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: {

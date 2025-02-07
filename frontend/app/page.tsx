@@ -27,9 +27,17 @@ import { apiRequest } from "@/lib/api";
 export default function Home() {
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      text: "",
+      key: undefined,
+      keepSpaces: true,
+      keepPunctuation: true,
+      transformCase: "keep_case"
+    }
   })
 
   function onSubmit(formData: z.infer<typeof FormSchema>) {
+    console.log("Hello, form clicked")
     const response = apiRequest(formData.action, formData)
     
     return toast({
@@ -75,7 +83,13 @@ export default function Home() {
                 <FormLabel>Key</FormLabel>
                 <FormControl>
                   <Input
+                    type="number"
                     {...field}
+                    value={field.value ?? ''}  // Convert null/undefined to empty string
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value ? parseInt(value) : undefined);
+                    }}
                   />
                 </FormControl>
                 <FormDescription>
@@ -139,9 +153,19 @@ export default function Home() {
             )}
           />
 
-          <Button type="submit">Encrypt</Button>
-          <Button type="submit">Decrypt</Button>
-          <Button type="submit">Hack</Button>
+          <FormField
+            control={form.control}
+            name="action"
+            render={({ field }) => (
+              <Button type="submit" onClick={() => field.onChange("encrypt")}>
+                Encrypt
+              </Button>
+            )}
+          />
+
+          {/* <Button type="submit" name="action" value="encrypt">Encrypt</Button> */}
+          {/* <Button type="submit" name="action" value="decrypt">Decrypt</Button>
+          <Button type="submit" name="action" value="hack">Hack</Button> */}
         </form>
       </Form>
     </main>
