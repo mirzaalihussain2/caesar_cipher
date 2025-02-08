@@ -37,7 +37,6 @@ export default function Home() {
   })
 
   function onSubmit(formData: z.infer<typeof FormSchema>) {
-    console.log("Hello, form clicked")
     const response = apiRequest(formData.action, formData)
     
     return toast({

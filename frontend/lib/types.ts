@@ -24,8 +24,8 @@ export const ErrorDetailSchema = z.object({
   
 export const MetadataSchema = z.object({
     key: z.number(),
-    confidenceLevel: z.enum(["low", "medium", "high"]).optional(),
-    analysisLength: z.number().optional()
+    confidenceLevel: z.enum(["low", "medium", "high"]).nullable(),
+    analysisLength: z.number().nullable()
 });
 
 export const ApiSolutionSchema = z.object({
@@ -44,7 +44,7 @@ export const ApiResponseSchema = z.object({
         z.array(ApiSolutionSchema),
         z.array(ApiTextSchema)
     ]).optional(),
-    error: ErrorDetailSchema.optional(),
+    error: ErrorDetailSchema.nullable(),
     metadata: MetadataSchema.optional()
 })
 
