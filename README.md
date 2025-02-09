@@ -313,7 +313,7 @@ NOTE:
 
 ## TO DO LIST
 - implement frontend
-- testing API locally without POSTMAN (or explain both, POSTMAN & CURL)
+- long-term, do I want types in a shared JSON, accessible to both front- & back-end? Rather than having duplicated types in both frontend & backend, and keeping both in sync.
 
 ## Requirements for front-end
 
@@ -352,4 +352,21 @@ NOTE:
 * All buttons disabled (1) if text area empty, (2) if key = 0 or multple of 26
 
 # OUTPUTS
-    * Text
+- Need to decide what outputs are
+
+ENCRYPT
+- text
+- metadata.key
+
+DECRYPT
+- text
+- metadata.key
+
+HACK
+- text
+- metadata.key (most likely key)
+    * should probably take key from data[0].key instead, maybe remove from metadata in backend API response?
+- metadata.confidenceLevel = 'high', 'medium', 'low'
+
+* must allow user to loop through solutions / "try again", in case 1st hacked solution isn't correct 
+

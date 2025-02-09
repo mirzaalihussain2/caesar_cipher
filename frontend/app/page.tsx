@@ -20,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData } from "@/lib/types";
+import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData, Action } from "@/lib/types";
 import { apiRequest } from "@/lib/api";
 
 
@@ -36,8 +36,9 @@ export default function Home() {
     }
   })
 
-  function onSubmit(formData: z.infer<typeof FormSchema>) {
-    const response = apiRequest(formData.action, formData)
+  async function onSubmit(formData: z.infer<typeof FormSchema>) {
+    const response = await apiRequest(formData.action, formData)
+    console.log(response)
     
     return toast({
       title: "You submitted the following values:",
@@ -156,8 +157,28 @@ export default function Home() {
             control={form.control}
             name="action"
             render={({ field }) => (
-              <Button type="submit" onClick={() => field.onChange("encrypt")}>
+              <Button type="submit" onClick={() => field.onChange("encrypt" satisfies Action)}>
                 Encrypt
+              </Button>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="action"
+            render={({ field }) => (
+              <Button type="submit" onClick={() => field.onChange("decrypt" satisfies Action)}>
+                Decrypt
+              </Button>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="action"
+            render={({ field }) => (
+              <Button type="submit" onClick={() => field.onChange("hack" satisfies Action)}>
+                Hack
               </Button>
             )}
           />
