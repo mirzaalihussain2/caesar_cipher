@@ -44,15 +44,14 @@ export default function Home() {
   }
 
   return (
-    <main className="container mx-auto px-4 max-w-3xl">
+    <main className="container mx-auto my-6 px-4 max-w-5xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="text"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Text</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Text to encrypt, decrypt or hack"
@@ -65,35 +64,57 @@ export default function Home() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="key"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Key</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ''}  // Convert null/undefined to empty string
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value ? parseInt(value) : undefined);
-                    }}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Encryption key
-                </FormDescription>
-              </FormItem>
-            )}
-          />
+          <div className="flex 
+            flex-col space-y-2
+            sm:flex-row justify-between items-center"
+          >
+            <FormField
+              control={form.control}
+              name="key"
+              render={({ field }) => (
+                <FormItem className="min-w-[13rem] w-[13rem] max-w-[13rem]">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Encryption key"
+                      className="text-center"
+                      {...field}
+                      value={field.value ?? ''}  // Convert null/undefined to empty string
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        field.onChange(value ? parseInt(value) : undefined);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-          <div className="flex flex-row justify-between">
+            <FormField
+              control={form.control}
+              name="transformCase"
+              render={({ field }) => (
+                <FormItem className="min-w-[13rem] w-[13rem] max-w-[13rem]">
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="text-center">
+                        <SelectValue placeholder="Select case of return text" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="min-w-[13rem] w-[13rem] max-w-[13rem]">
+                      <SelectItem value="keep_case">Keep case</SelectItem>
+                      <SelectItem value="lowercase">Lowercase</SelectItem>
+                      <SelectItem value="uppercase">Uppercase</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
             <FormSwitch
               form={form}
-              onLabel="Keep spaces"
-              offLabel="Remove spaces"
+              onLabel="Keep whitespace"
+              offLabel="Remove whitespace"
               name="keepSpaces"
             />
 
@@ -104,57 +125,39 @@ export default function Home() {
               name="keepPunctuation"
             />
 
+          </div>
+
+          <div className="flex flex-row w-full gap-4">
             <FormField
               control={form.control}
-              name="transformCase"
+              name="action"
               render={({ field }) => (
-                <FormItem className="border-2 border-blue-700">
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select case of return text" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="keep_case">Keep case</SelectItem>
-                      <SelectItem value="lowercase">Lowercase</SelectItem>
-                      <SelectItem value="uppercase">Uppercase</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+                <Button 
+                  type="submit" 
+                  size="lg"
+                  className="flex-1 text-base sm:text-sm md:text-base" 
+                  onClick={() => field.onChange("encrypt" satisfies Action)}
+                >
+                  Encrypt
+                </Button>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="action"
+              render={({ field }) => (
+                <Button 
+                  type="submit" 
+                  size="lg"
+                  className="flex-1 text-base sm:text-sm md:text-base" 
+                  onClick={() => field.onChange(form.watch("key") === undefined ? "hack" : "decrypt" satisfies Action)}
+                >
+                  {form.watch("key") == undefined ? "Hack" : "Decrypt"}
+                </Button>
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="action"
-            render={({ field }) => (
-              <Button type="submit" onClick={() => field.onChange("encrypt" satisfies Action)}>
-                Encrypt
-              </Button>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="action"
-            render={({ field }) => (
-              <Button type="submit" onClick={() => field.onChange("decrypt" satisfies Action)}>
-                Decrypt
-              </Button>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="action"
-            render={({ field }) => (
-              <Button type="submit" onClick={() => field.onChange("hack" satisfies Action)}>
-                Hack
-              </Button>
-            )}
-          />
 
         </form>
       </Form>
