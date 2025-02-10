@@ -89,7 +89,7 @@ export default function Home() {
             )}
           />
 
-          <div className="flex flex-row">
+          <div className="flex flex-row justify-between">
             <FormSwitch
               form={form}
               onLabel="Keep spaces"
@@ -108,8 +108,7 @@ export default function Home() {
               control={form.control}
               name="transformCase"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Transform Case </FormLabel>
+                <FormItem className="border-2 border-blue-700">
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -126,7 +125,6 @@ export default function Home() {
               )}
             />
           </div>
-
 
           <FormField
             control={form.control}
