@@ -1,6 +1,8 @@
 "use client"
 
 import { TypingAnimation } from "@/components/ui/typing-animation";
+import { HyperText } from "@/components/ui/hyper-text";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -46,6 +48,11 @@ export default function Home() {
 
   return (
     <main className="container mx-auto my-6 px-4 max-w-5xl">
+      <HyperText
+        className="mx-auto text-4xl font-bold text-black dark:text-white my-10"
+        text="Caesar Cipher"
+      />
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
