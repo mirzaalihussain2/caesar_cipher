@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
  
-import { toast } from "@/components/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -20,11 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData, Action } from "@/lib/types";
+import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData, Action, ApiResponse } from "@/lib/types";
 import { apiRequest } from "@/lib/api";
+import { useState } from "react";
 
 
 export default function Home() {
+  const [response, setResponse] = useState<ApiResponse | null>(null)
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -39,15 +40,7 @@ export default function Home() {
   async function onSubmit(formData: z.infer<typeof FormSchema>) {
     const response = await apiRequest(formData.action, formData)
     console.log(response)
-    
-    return toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify({formData}, null, 2)}</code>
-        </pre>
-      ),
-    })
+    setResponse(response)
   }
 
   return (
@@ -183,11 +176,15 @@ export default function Home() {
             )}
           />
 
-          {/* <Button type="submit" name="action" value="encrypt">Encrypt</Button> */}
-          {/* <Button type="submit" name="action" value="decrypt">Decrypt</Button>
-          <Button type="submit" name="action" value="hack">Hack</Button> */}
         </form>
       </Form>
+
+      {response?.data && (
+        <div className="w-2/3 space-y-6">
+          <h2 className="font-semibold mb-2">Result:</h2>
+          <p>{response.data[0].text}</p>
+        </div>
+      )}
     </main>
   );
 }
