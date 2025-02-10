@@ -64,67 +64,73 @@ export default function Home() {
             )}
           />
 
-          <div className="flex 
-            flex-col space-y-2
-            sm:flex-row justify-between items-center"
-          >
-            <FormField
-              control={form.control}
-              name="key"
-              render={({ field }) => (
-                <FormItem className="min-w-[13rem] w-[13rem] max-w-[13rem]">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Encryption key"
-                      className="text-center"
-                      {...field}
-                      value={field.value ?? ''}  // Convert null/undefined to empty string
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value ? parseInt(value) : undefined);
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <div className="grid grid-cols-1 gap-4 w-full justify-center
+            sm:flex sm:flex-row sm:justify-center sm:items-center">
+            <div className="grid grid-cols-2 gap-x-[10%] gap-y-4 w-full max-w-4xl
+              sm:flex sm:flex-row sm:justify-between sm:items-center sm:gap-4">
+              <div className="flex flex-col gap-4 w-full justify-center
+                sm:flex-row sm:gap-4">
+                <FormField
+                  control={form.control}
+                  name="key"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 min-w-[48%] sm:min-w-[13rem]">
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Encryption key"
+                          className="text-center h-10"
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value ? parseInt(value) : undefined);
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="transformCase"
-              render={({ field }) => (
-                <FormItem className="min-w-[13rem] w-[13rem] max-w-[13rem]">
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="text-center">
-                        <SelectValue placeholder="Select case of return text" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="min-w-[13rem] w-[13rem] max-w-[13rem]">
-                      <SelectItem value="keep_case">Keep case</SelectItem>
-                      <SelectItem value="lowercase">Lowercase</SelectItem>
-                      <SelectItem value="uppercase">Uppercase</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="transformCase"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 min-w-[48%] sm:min-w-[13rem]">
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="text-center">
+                            <SelectValue placeholder="Select case of return text" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="min-w-[13rem] w-full">
+                          <SelectItem value="keep_case">Keep case</SelectItem>
+                          <SelectItem value="lowercase">Lowercase</SelectItem>
+                          <SelectItem value="uppercase">Uppercase</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <FormSwitch
-              form={form}
-              onLabel="Keep whitespace"
-              offLabel="Remove whitespace"
-              name="keepSpaces"
-            />
+              <div className="flex flex-col gap-4 w-full justify-center
+                sm:flex-row sm:gap-4">
+                <FormSwitch
+                  form={form}
+                  onLabel="Keep whitespace"
+                  offLabel="Remove whitespace"
+                  name="keepSpaces"
+                />
 
-            <FormSwitch
-              form={form}
-              onLabel="Keep punctuation"
-              offLabel="Remove punctuation"
-              name="keepPunctuation"
-            />
-
+                <FormSwitch
+                  form={form}
+                  onLabel="Keep punctuation"
+                  offLabel="Remove punctuation"
+                  name="keepPunctuation"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-row w-full gap-4">
