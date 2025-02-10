@@ -1,5 +1,6 @@
 "use client"
 
+import { TypingAnimation } from "@/components/ui/typing-animation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -169,9 +170,14 @@ export default function Home() {
       </Form>
 
       {response?.data && (
-        <div className="w-2/3 space-y-6">
-          <h2 className="font-semibold mb-2">Result:</h2>
-          <p>{response.data[0].text}</p>
+        <div className="space-y-6">
+
+        <TypingAnimation
+          className="text-4xl font-bold text-black dark:text-white"
+          text={response.data[0].text}
+        />
+          {/* <h2 className="font-semibold mb-2">Result:</h2>
+          <p>{response.data[0].text}</p> */}
         </div>
       )}
     </main>
