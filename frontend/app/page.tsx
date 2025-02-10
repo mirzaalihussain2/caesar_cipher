@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { FormSwitch } from '@/components/FormSwitch';
 import { Textarea } from "@/components/ui/textarea";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,14 +55,11 @@ export default function Home() {
                 <FormLabel>Text</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Tell us a little bit about yourself"
+                    placeholder="Text to encrypt, decrypt or hack"
                     className="resize-none"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  You can <span>@mention</span> other users and organisations.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -92,59 +89,44 @@ export default function Home() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="keepSpaces"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Keep spaces</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row">
+            <FormSwitch
+              form={form}
+              onLabel="Keep spaces"
+              offLabel="Remove spaces"
+              name="keepSpaces"
+            />
 
-          <FormField
-            control={form.control}
-            name="keepPunctuation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Keep punctuation</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+            <FormSwitch
+              form={form}
+              onLabel="Keep punctuation"
+              offLabel="Remove punctuation"
+              name="keepPunctuation"
+            />
 
-          <FormField
-            control={form.control}
-            name="transformCase"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Transform Case </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select case of return text" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="keep_case">Keep case</SelectItem>
-                    <SelectItem value="lowercase">Lowercase</SelectItem>
-                    <SelectItem value="uppercase">Uppercase</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="transformCase"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transform Case </FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select case of return text" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="keep_case">Keep case</SelectItem>
+                      <SelectItem value="lowercase">Lowercase</SelectItem>
+                      <SelectItem value="uppercase">Uppercase</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
+
 
           <FormField
             control={form.control}

@@ -2,6 +2,8 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional
 from enum import Enum
 
+MAX_MESSAGE_LENGTH = 10000
+
 class StatName(str, Enum):
     UNIGRAM = 'unigram'
     BIGRAM = 'bigram'
@@ -69,7 +71,7 @@ class HackResult(BaseModel):
     analysis_length: int | None
 
 class EncryptionRequest(BaseModel):
-    text: str = Field(..., max_length=10000, description="Text to be encrypted / decrypted")
+    text: str = Field(..., max_length=MAX_MESSAGE_LENGTH, description="Text to be encrypted / decrypted")
     key: Optional[int] = Field(None, description="Shift key for encryption / decryption")
     keep_spaces: Optional[bool] = Field(default=True, description='Keep whitespace in return text')
     keep_punctuation: Optional[bool] = Field(default=True, description='Keep punctuation in return text')

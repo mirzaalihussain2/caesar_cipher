@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const MAX_MESSAGE_LENGTH = Number(process.env.NEXT_PUBLIC_MAX_MESSAGE_LENGTH) || 10000;
+
 // Request Schemas
 export const ActionSchema = z.enum(["encrypt", "decrypt", "hack"]);
 
@@ -8,7 +10,7 @@ export const EndpointSchema = ActionSchema.transform((action): "encrypt" | "decr
 );
 
 export const ApiRequestSchema = z.object({
-    text: z.string().min(1).max(10000),
+    text: z.string().min(1).max(MAX_MESSAGE_LENGTH),
     key: z.number().int().optional(),
     keepSpaces: z.boolean().default(true),
     keepPunctuation: z.boolean().default(true),
@@ -49,29 +51,32 @@ export const ApiResponseSchema = z.object({
 })
 
 // Form Schema
+const emptyTextMsg = `Text cannot be empty`
+const tooManyCharactersMsg = `Text cannot exceed ${MAX_MESSAGE_LENGTH} characters`
+
 export const FormSchema = z.discriminatedUnion('action', [
     z.object({
       action: z.literal(ActionSchema.enum.encrypt),
       ...ApiRequestSchema.shape,
       text: z.string()
-        .min(1, { message: "Input text cannot be empty" })
-        .max(10000, { message: "Input text cannot exceed 10,000 characters" }),
+        .min(1, { message: emptyTextMsg })
+        .max(10000, { message: tooManyCharactersMsg }),
       key: z.optional(z.number().int({ message: "Key must be a whole number" }))
     }),
     z.object({
       action: z.literal(ActionSchema.enum.decrypt),
       ...ApiRequestSchema.shape,
       text: z.string()
-        .min(1, { message: "Input text cannot be empty" })
-        .max(10000, { message: "Input text cannot exceed 10,000 characters" }),
+        .min(1, { message: emptyTextMsg })
+        .max(10000, { message: tooManyCharactersMsg }),
       key: z.number().int({ message: "Key is required for decryption" })
     }),
     z.object({
       action: z.literal(ActionSchema.enum.hack),
       ...ApiRequestSchema.shape,
       text: z.string()
-        .min(1, { message: "Input text cannot be empty" })
-        .max(10000, { message: "Input text cannot exceed 10,000 characters" }),
+        .min(1, { message: emptyTextMsg })
+        .max(10000, { message: tooManyCharactersMsg }),
       key: z.undefined({ message: "Hacking ciphertext does not involve a key" })
     })
 ]);
