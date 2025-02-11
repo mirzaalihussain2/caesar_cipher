@@ -303,8 +303,7 @@ All tests interact with the API through HTTP requests.
 
 ## Running E2E frontend tests
 Not yet implemented (will likely use Playwright)
-
-<br>
+<br><br>
 
 # Deployment
 ## Requirements for running backend locally
@@ -335,7 +334,6 @@ NOTE:
 1. if pushing as a monorepo, set root directory to `/backend`
 2. if not automatically detected, set variable to `RAILWAY_DOCKERFILE_PATH` to `backend/Dockerfile.prod`
 3. set other variables from `.env.prod` file
-
 <br><br>
 
 

@@ -1,5 +1,5 @@
 import { toCamelCase, toSnakeCase } from "./transform";
-import { Action, ApiRequest, Endpoint, ApiResponse, ApiResponseSchema } from "./types";
+import { Action, ApiRequest, ApiResponse, ApiResponseSchema } from "./types";
 import { EndpointSchema, ApiRequestSchema } from "./types";
 
 const API_URL = new URL(process.env.NEXT_PUBLIC_API_URL as string);
