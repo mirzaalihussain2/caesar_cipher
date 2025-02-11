@@ -17,6 +17,11 @@ export const ApiRequestSchema = z.object({
     transformCase: z.enum(["lowercase", "uppercase", "keep_case"]).default("keep_case")
 })
 
+export type Action = z.infer<typeof ActionSchema>;
+export type Endpoint = z.infer<typeof EndpointSchema>
+export type ApiRequest = z.infer<typeof ApiRequestSchema>
+
+
 // Response Schemas
 export const ErrorDetailSchema = z.object({
     code: z.string(),
@@ -51,9 +56,30 @@ export const ApiResponseSchema = z.object({
     metadata: MetadataSchema.optional()
 })
 
+export type ErrorDetail = z.infer<typeof ErrorDetailSchema>
+export type Metadata = z.infer<typeof MetadataSchema>
+export type ApiSolution = z.infer<typeof ApiSolutionSchema>
+export type ApiText = z.infer<typeof ApiTextSchema>
+export type ApiResponse = z.infer<typeof ApiResponseSchema>
+
+
 // Form Schema
 const emptyTextMsg = `Text cannot be empty`
 const tooManyCharactersMsg = `Text cannot exceed ${MAX_MESSAGE_LENGTH} characters`
+const zeroKeyMsg = "Key cannot be 0. This won't encrypt or decrypt your text."
+const multipleTwentySixKeyMsg = "Key cannot be a multiple of 26. This won't encrypt or decrypt your text."
+
+const zeroKey = (key: number | undefined) => {
+  if (key === undefined ) return true;
+  if (key === 0) return false;
+  return true
+}
+
+const multipleTwentySixKey = (key: number | undefined) => {
+  if (key === undefined ) return true;
+  if (key % 26 === 0) return false;
+  return true
+}
 
 export const FormSchema = z.discriminatedUnion('action', [
     z.object({
@@ -62,7 +88,11 @@ export const FormSchema = z.discriminatedUnion('action', [
       text: z.string()
         .min(1, { message: emptyTextMsg })
         .max(10000, { message: tooManyCharactersMsg }),
-      key: z.optional(z.number().int({ message: "Key must be a whole number" }))
+      key: z.optional(z.number()
+        .int({ message: "Key must be a whole number" })
+        .refine((key) => zeroKey(key), { message: zeroKeyMsg })
+        .refine((key) => multipleTwentySixKey(key), { message: multipleTwentySixKeyMsg })
+      )
     }),
     z.object({
       action: z.literal(ActionSchema.enum.decrypt),
@@ -70,7 +100,10 @@ export const FormSchema = z.discriminatedUnion('action', [
       text: z.string()
         .min(1, { message: emptyTextMsg })
         .max(10000, { message: tooManyCharactersMsg }),
-      key: z.number().int({ message: "Key is required for decryption" })
+      key: z.number()
+        .int({ message: "Key is required for decryption" })
+        .refine((key) => zeroKey(key), { message: zeroKeyMsg })
+        .refine((key) => multipleTwentySixKey(key), { message: multipleTwentySixKeyMsg })
     }),
     z.object({
       action: z.literal(ActionSchema.enum.hack),
@@ -82,13 +115,4 @@ export const FormSchema = z.discriminatedUnion('action', [
     })
 ]);
 
-// Export types
-export type Action = z.infer<typeof ActionSchema>;
-export type Endpoint = z.infer<typeof EndpointSchema>
-export type ApiRequest = z.infer<typeof ApiRequestSchema>
-export type ErrorDetail = z.infer<typeof ErrorDetailSchema>
-export type Metadata = z.infer<typeof MetadataSchema>
-export type ApiSolution = z.infer<typeof ApiSolutionSchema>
-export type ApiText = z.infer<typeof ApiTextSchema>
-export type ApiResponse = z.infer<typeof ApiResponseSchema>
 export type FormData = z.infer<typeof FormSchema>;
