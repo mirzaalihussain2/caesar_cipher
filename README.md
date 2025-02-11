@@ -6,6 +6,11 @@ This is a basic app that encrypts, decrypts and hacks Caesar ciphers. It uses fr
 Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacOS, Linux).
 
 ## Frontend
+- Next.js 15.1
+- React 19
+- TypeScript
+- TailwindCSS
+- shadcn/ui components
 
 ## Backend
 - Python 3.11
@@ -19,11 +24,11 @@ Throughout these docs, Terminal commands are provided for Unix shells (i.e. MacO
 # API information
 
 ## Routes
-This API serves only two routes:
+The backend API serves only two routes:
 - `/encrypt`
 - `/decrypt`
 
-For understanding the app structure, begin with the [@encrypt.py](backend/app/encrypt.py) and [@decrypt.py](backend/app/decrypt.py) files that correspond to these routes.
+For understanding the backend structure, begin with the [@encrypt.py](backend/app/encrypt.py) and [@decrypt.py](backend/app/decrypt.py) files that correspond to these routes.
 <br><br>
 
 #### Smoke test
@@ -57,6 +62,7 @@ All API responses have the following shape:
         "message": string
     } | null,
     "metadata": {
+        "action": 'encrypt', // could be 'decrypt' or 'hack'
         "key": integer
         // ...
     } | null
@@ -110,6 +116,7 @@ curl -X POST http://localhost:8080/encrypt \
     "error": null,
     "success": true,
     "metadata": {
+        "action": "encrypt",
         "key": 9
     }
 }
@@ -154,6 +161,7 @@ curl -X POST http://localhost:8080/decrypt \
     "error": null,
     "success": true,
     "metadata": {
+        "action": "decrypt",
         "key": 17
     }
 }
@@ -216,10 +224,11 @@ curl -X POST http://localhost:8080/decrypt \
     "error": null,
     "success": true,
     "metadata": {
+        "action": "hack",
         "analysis_length": 120,
         "confidence_level": "low",
         "key": 17 // key of best match
-    },
+    }
 }
 ```
 <br>
@@ -234,7 +243,7 @@ curl -X POST http://localhost:8080/decrypt \
 <br>
 
 2. Navigate to `backend` folder and create an `.env.local` file (copying `.env.example`).
-    ``` bash
+    ```bash
     cd backend && cp .env.example .env.local
     ```
 <br>
@@ -255,6 +264,21 @@ From the backend folder, there are 4 ways to run the backend:
 | docker | prod | `./boot.sh docker prod` |  
 
 Backend served at [http://localhost:8080](http://localhost:8080) - only route available is 'Hello, World!' smoke test on index route (`/`).
+
+## Running frontend
+1. Ensure you have Node 22+ installed
+    ```bash
+    node --version
+    ```
+
+2. Navigate to `frontend` folder and create an `.env.local` file (copying `.env.example`).
+    ```bash
+    cd frontend && cp .env.example .env.local
+    ```
+
+3. Install dependencies with `pnpm install`
+4. Run development server with `pnpm dev`
+5. Frontend served at [http://localhost:3000](http://localhost:3000).
 <br><br>
 
 # Testing
@@ -265,9 +289,9 @@ There is a simple suite of API integration tests that test each operation (encry
 - **Hacking Tests**: Tests hacking 12 ciphertexts (5 ciphertexts < 200 characters, 6 ciphertexts 2000 - 4000 characters, 1 ciphertext > 9000 characters). Checks that metadata includes a confidence level (high, medium, low) and the length of analysed text
 - **Basic Smoke Test**: Verifies API is running & responding.
 
-All tests interact with the API througuh HTTP requests.
+All tests interact with the API through HTTP requests.
 
-## Running tests
+## Running API tests
 1. Set up backend following ([setup](#setup)) instructions above.
 2. Once in `backend` folder, execute `./test.sh` from Terminal
 
@@ -276,6 +300,10 @@ All tests interact with the API througuh HTTP requests.
     | running tests normally |  `./test.sh` |
     | running tests with coverage report |  `./test.sh coverage` |
     | running tests with detailed output |  `./test.sh verbose` |
+
+## Running E2E frontend tests
+Not yet implemented (will likely use Playwright)
+
 <br>
 
 # Deployment
@@ -313,5 +341,12 @@ NOTE:
 
 ## TO DO LIST
 - long-term, do I want types in a shared JSON, accessible to both front- & back-end? Rather than having duplicated types in both frontend & backend, and keeping both in sync.
+
+### frontend
 - add frontend E2E tests, maybe in Playwright
 - for 'Hack' need an option to loop through solutions (i.e. try again), esp when confidence_level !== high
+- light & dark mode
+- Add .nvmrc file for controlling node / nvm version
+
+### backend
+- backend runs CORS in prod, security vulnerability, change in future
