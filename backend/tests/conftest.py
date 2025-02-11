@@ -5,6 +5,7 @@ class TestConfig:
     TESTING = True
     SECRET_KEY = 'test-key'
     PROPAGATE_EXCEPTIONS = True
+    FRONTEND_URL = 'http://localhost:3000'
 
 @pytest.fixture
 def test_client():

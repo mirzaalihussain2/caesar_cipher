@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from http import HTTPStatus
-from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution
+from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail, ApiSolution, Action
 from app.common.utils import normalize_key
 from app.common.errors import InvalidKeyError, error_logger
 from app.encryption.encrypt_cipher import encrypt_text, transform_text
@@ -27,6 +27,7 @@ def decrypt():
                 success=True,
                 data=transformed_solutions,
                 metadata=Metadata(
+                    action=Action.HACK,
                     key=transformed_solutions[0].key,
                     confidence_level=hack_result.confidence_level,
                     analysis_length=hack_result.analysis_length
@@ -46,6 +47,7 @@ def decrypt():
                     text=transformed_text
                 )],
                 metadata=Metadata(
+                    action=Action.DECRYPT,
                     key=normalized_key
                 )
             )

@@ -15,6 +15,11 @@ class ConfidenceLevel(str, Enum):
     MEDIUM = 'medium'
     HIGH = 'high'
 
+class Action(str, Enum):
+    ENCRYPT = 'encrypt'
+    DECRYPT = 'decrypt'
+    HACK = 'hack'
+
 class ConfidenceThreshold(BaseModel):
     z_statistic: float
     separation_score: float
@@ -26,6 +31,7 @@ class ErrorDetail(BaseModel):
     error_id: Optional[str] = None
 
 class Metadata(BaseModel):
+    action: Action
     key: int
     confidence_level: Optional[ConfidenceLevel] = None
     analysis_length: Optional[int] = None

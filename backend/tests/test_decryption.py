@@ -1,5 +1,5 @@
 import pytest
-from app.common.types import TransformCase
+from app.common.types import TransformCase, Action
 
 # Base test case variations that will be applied to each encrypted message
 base_variations = [
@@ -46,4 +46,5 @@ def test_decryption_permutations(test_client, test_params):
     response = test_client.post('/decrypt', json=payload)
     assert response.status_code == 200
     assert response.json['success'] == True
+    assert response.json['metadata']['action'] == Action.DECRYPT
     assert response.json['data'][0]['text'] == test_params["expected"]

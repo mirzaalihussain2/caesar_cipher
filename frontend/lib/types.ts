@@ -25,6 +25,7 @@ export const ErrorDetailSchema = z.object({
 });
   
 export const MetadataSchema = z.object({
+    action: z.enum(["encrypt", "decrypt", "hack"]),
     key: z.number(),
     confidenceLevel: z.enum(["low", "medium", "high"]).nullable(),
     analysisLength: z.number().nullable()

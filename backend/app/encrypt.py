@@ -4,7 +4,7 @@ import random
 from http import HTTPStatus
 import logging
 import inspect
-from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail
+from app.common.types import ApiText, Metadata, EncryptionRequest, ApiResponse, ErrorDetail, Action
 from app.common.utils import normalize_key
 from app.common.errors import InvalidKeyError
 from app.encryption.encrypt_cipher import encrypt_text, transform_text
@@ -26,6 +26,7 @@ def encrypt():
                 text=transformed_text
             )],
             metadata=Metadata(
+                action=Action.ENCRYPT,
                 key=normalized_key
             )
         )

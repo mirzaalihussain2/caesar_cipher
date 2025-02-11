@@ -1,5 +1,5 @@
 import pytest
-from app.common.types import TransformCase
+from app.common.types import TransformCase, Action
 
 test_cases = [
     # key=5 permutations
@@ -60,4 +60,5 @@ def test_encryption_permutations(test_client, test_params):
     assert response.status_code == 200
     assert response.json['success'] == True
     assert response.json['metadata']['key'] == test_params["key"]
+    assert response.json['metadata']['action'] == Action.ENCRYPT
     assert response.json['data'][0]['text'] == test_params["expected"]

@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ApiRequest, ApiRequestSchema, Endpoint, FormSchema, FormData, Action, ApiResponse } from "@/lib/types";
+import { FormSchema, FormData, Action, ApiResponse } from "@/lib/types";
 import { apiRequest } from "@/lib/api";
 import { useState } from "react";
 
@@ -196,7 +196,11 @@ export default function Home() {
           <>
             <TypingAnimation
               className="text-4xl mb-4"
-              text="Encrypted text"
+              text={`${
+                response.metadata?.action === 'encrypt' ? 'encrypted' :
+                response.metadata?.action === 'decrypt' ? 'decrypted' :
+                response.metadata?.action === 'hack' ? 'hacked' : ''
+              } text`}
               duration={10}
             />
             <TypingAnimation

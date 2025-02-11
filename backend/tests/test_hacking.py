@@ -1,5 +1,6 @@
 import pytest
 from typing import TypedDict
+from app.common.types import Action
 
 class HackingTestCase(TypedDict):
     plaintext: str
@@ -96,6 +97,7 @@ def test_hack_cipher(test_client, test_params):
     solutions = response.json['data']
     
     # Verify metadata
+    assert metadata['action'] == Action.HACK
     assert metadata['confidence_level'] in ['low', 'medium', 'high']
     assert isinstance(metadata['analysis_length'], int)
     assert metadata['analysis_length'] > 0
