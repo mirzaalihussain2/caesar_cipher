@@ -39,7 +39,6 @@ export default function Home() {
 
   async function onSubmit(formData: z.infer<typeof FormSchema>) {
     const response = await apiRequest(formData.action, formData)
-    console.log(response)
     setResponse(response)
   }
 
