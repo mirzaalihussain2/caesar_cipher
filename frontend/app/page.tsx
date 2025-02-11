@@ -66,7 +66,6 @@ export default function Home() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -96,7 +95,6 @@ export default function Home() {
                           }}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -140,6 +138,20 @@ export default function Home() {
                 />
               </div>
             </div>
+          </div>
+
+          <div className="h-6">
+            {form.formState.errors.text?.message ? (
+              <FormMessage>{form.formState.errors.text.message}</FormMessage>
+            ) : form.formState.errors.key?.message ? (
+              <FormMessage>{form.formState.errors.key.message}</FormMessage>
+            ) : form.formState.errors.transformCase?.message ? (
+              <FormMessage>{form.formState.errors.transformCase.message}</FormMessage>
+            ) : form.formState.errors.keepSpaces?.message ? (
+              <FormMessage>{form.formState.errors.keepSpaces.message}</FormMessage>
+            ) : form.formState.errors.keepPunctuation?.message ? (
+              <FormMessage>{form.formState.errors.keepPunctuation.message}</FormMessage>
+            ) : null}
           </div>
 
           <div className="flex flex-row w-full gap-4">
