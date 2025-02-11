@@ -26,7 +26,6 @@ import { FormSchema, FormData, Action, ApiResponse } from "@/lib/types";
 import { apiRequest } from "@/lib/api";
 import { useState } from "react";
 
-
 export default function Home() {
   const [response, setResponse] = useState<ApiResponse | null>(null)
   const form = useForm<FormData>({
@@ -151,6 +150,7 @@ export default function Home() {
                   type="submit" 
                   size="lg"
                   className="flex-1" 
+                  disabled={!form.watch("text")}
                   onClick={() => field.onChange("encrypt" satisfies Action)}
                 >
                   <TypingAnimation
@@ -169,7 +169,8 @@ export default function Home() {
                 <Button 
                   type="submit" 
                   size="lg"
-                  className="flex-1" 
+                  className="flex-1"
+                  disabled={!form.watch("text")}
                   onClick={() => field.onChange(form.watch("key") === undefined ? "hack" : "decrypt" satisfies Action)}
                 >
                   {form.watch("key") == undefined ?
@@ -195,7 +196,7 @@ export default function Home() {
         {response?.data && (
           <>
             <TypingAnimation
-              className="text-4xl mb-4"
+              className="text-4xl font-bold mb-4"
               text={`${
                 response.metadata?.action === 'encrypt' ? 'encrypted' :
                 response.metadata?.action === 'decrypt' ? 'decrypted' :
