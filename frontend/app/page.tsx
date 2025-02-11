@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <main className="container mx-auto my-6 px-4 max-w-5xl">
       <HyperText
-        className="mx-auto text-4xl font-bold text-black dark:text-white my-10"
+        className="mx-auto text-6xl font-bold text-black dark:text-white my-10"
         text="Caesar Cipher"
       />
 
@@ -92,7 +92,8 @@ export default function Home() {
                           value={field.value ?? ''}
                           onChange={(e) => {
                             const value = e.target.value;
-                            field.onChange(value ? parseInt(value) : undefined);
+                            const parsedValue = value ? parseInt(value) : undefined;
+                            field.onChange(parsedValue);
                           }}
                         />
                       </FormControl>
@@ -149,10 +150,14 @@ export default function Home() {
                 <Button 
                   type="submit" 
                   size="lg"
-                  className="flex-1 text-base sm:text-sm md:text-base" 
+                  className="flex-1" 
                   onClick={() => field.onChange("encrypt" satisfies Action)}
                 >
-                  Encrypt
+                  <TypingAnimation
+                    className="text-base sm:text-sm md:text-base"
+                    text="Encrypt"
+                    duration={100}
+                  />
                 </Button>
               )}
             />
@@ -164,10 +169,20 @@ export default function Home() {
                 <Button 
                   type="submit" 
                   size="lg"
-                  className="flex-1 text-base sm:text-sm md:text-base" 
+                  className="flex-1" 
                   onClick={() => field.onChange(form.watch("key") === undefined ? "hack" : "decrypt" satisfies Action)}
                 >
-                  {form.watch("key") == undefined ? "Hack" : "Decrypt"}
+                  {form.watch("key") == undefined ?
+                    <TypingAnimation
+                      className="text-base sm:text-sm md:text-base"
+                      text="Hack"
+                      duration={50}
+                    /> : 
+                    <TypingAnimation
+                      className="text-base sm:text-sm md:text-base"
+                      text="Decrypt"
+                      duration={50}
+                    />}
                 </Button>
               )}
             />
@@ -176,17 +191,22 @@ export default function Home() {
         </form>
       </Form>
 
-      {response?.data && (
-        <div className="space-y-6">
-
-        <TypingAnimation
-          className="text-4xl font-bold text-black dark:text-white"
-          text={response.data[0].text}
-        />
-          {/* <h2 className="font-semibold mb-2">Result:</h2>
-          <p>{response.data[0].text}</p> */}
-        </div>
-      )}
+      <div className="my-12">
+        {response?.data && (
+          <>
+            <TypingAnimation
+              className="text-4xl mb-4"
+              text="Encrypted text"
+              duration={10}
+            />
+            <TypingAnimation
+                className="text-xl font-light"
+                text={response.data[0].text}
+                duration={20}
+              />
+          </>
+        )}
+      </div>
     </main>
   );
 }

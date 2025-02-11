@@ -18,6 +18,12 @@ export function TypingAnimation({
   const [displayedText, setDisplayedText] = useState<string>("");
   const [i, setI] = useState<number>(0);
 
+  // Reset animation when text changes
+  useEffect(() => {
+    setI(0);
+    setDisplayedText("");
+  }, [text]);
+
   useEffect(() => {
     const typingEffect = setInterval(() => {
       if (i < text.length) {
@@ -31,16 +37,16 @@ export function TypingAnimation({
     return () => {
       clearInterval(typingEffect);
     };
-  }, [duration, i]);
+  }, [duration, i, text]); // Added text as a dependency
 
   return (
     <h1
       className={cn(
-        "font-display text-center text-4xl font-bold leading-[5rem] tracking-[-0.02em] drop-shadow-sm",
+        "font-display text-center text-4xl leading-[5rem] tracking-[-0.02em] drop-shadow-sm",
         className,
       )}
     >
-      {displayedText ? displayedText : ""}
+      {displayedText}
     </h1>
   );
 }
