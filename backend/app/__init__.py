@@ -36,4 +36,9 @@ def create_app(config_class=Config):
             "status": "success"
         }
     
+    @app.after_request
+    def after_request(response):
+        app.logger.info(f"CORS Headers: {dict(response.headers)}")
+        return response
+    
     return app
