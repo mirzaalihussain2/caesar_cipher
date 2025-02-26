@@ -344,7 +344,6 @@ NOTE:
 - add frontend E2E tests, maybe in Playwright
 - for 'Hack' need an option to loop through solutions (i.e. try again), esp when confidence_level !== high
 - light & dark mode
-- Add .nvmrc file for controlling node / nvm version
 
 ### backend
 - backend runs CORS in prod, security vulnerability, change in future
